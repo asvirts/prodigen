@@ -4,6 +4,9 @@ import React, { useState, useTransition } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
+import { format } from "date-fns"
+import { CalendarIcon } from "lucide-react"
+import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
   Form,
@@ -22,14 +25,21 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select"
+import { Calendar } from "@/components/ui/calendar"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger
+} from "@/components/ui/popover"
 import { Task, updateTask } from "../actions" // Import action and Task type
+import { toast } from "sonner"
 
 // Define the form schema for editing
 const editFormSchema = z.object({
   title: z.string().min(2, { message: "Title must be at least 2 characters." }),
   description: z.string().optional(),
-  status: z.enum(["todo", "in_progress", "done"]) // Add status field
-  // due_date: z.date().optional(), // Add later
+  status: z.enum(["todo", "in_progress", "done"]), // Add status field
+  due_date: z.date().optional().nullable() // Add optional, nullable date
 })
 
 interface EditTaskFormProps {
@@ -46,8 +56,8 @@ export function EditTaskForm({ task, onSuccess }: EditTaskFormProps) {
     defaultValues: {
       title: task.title || "",
       description: task.description || "",
-      status: task.status || "todo"
-      // due_date: task.due_date ? new Date(task.due_date) : undefined,
+      status: task.status || "todo",
+      due_date: task.due_date ? new Date(task.due_date) : null
     }
   })
 
@@ -55,23 +65,30 @@ export function EditTaskForm({ task, onSuccess }: EditTaskFormProps) {
     setError(null)
     startTransition(async () => {
       try {
+        const dateString = values.due_date
+          ? format(values.due_date, "yyyy-MM-dd")
+          : null
+
         const result = await updateTask({
-          id: task.id, // Include the task ID
-          ...values
+          id: task.id,
+          title: values.title,
+          description: values.description,
+          status: values.status,
+          due_date: dateString
         })
 
         if (result?.error) {
           throw new Error(result.error)
         }
 
-        // Optionally: Show success message
         console.log("Task updated successfully!")
-        onSuccess?.() // Call the callback if provided
+        onSuccess?.()
       } catch (err) {
         console.error(err)
-        setError(
+        const errorMsg =
           err instanceof Error ? err.message : "An unexpected error occurred."
-        )
+        setError(errorMsg)
+        toast.error(errorMsg)
       }
     })
   }
@@ -99,7 +116,6 @@ export function EditTaskForm({ task, onSuccess }: EditTaskFormProps) {
             <FormItem>
               <FormLabel>Description (Optional)</FormLabel>
               <FormControl>
-                {/* Pass the value prop correctly for controlled Textarea */}
                 <Textarea
                   placeholder="Task description"
                   {...field}
@@ -132,7 +148,44 @@ export function EditTaskForm({ task, onSuccess }: EditTaskFormProps) {
             </FormItem>
           )}
         />
-        {/* TODO: Add Date Picker Field here */}
+        <FormField
+          control={form.control}
+          name="due_date"
+          render={({ field }) => (
+            <FormItem className="flex flex-col pt-2">
+              <FormLabel>Due Date (Optional)</FormLabel>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <FormControl>
+                    <Button
+                      variant={"outline"}
+                      className={cn(
+                        "w-[240px] pl-3 text-left font-normal",
+                        !field.value && "text-muted-foreground"
+                      )}
+                    >
+                      {field.value ? (
+                        format(field.value, "PPP")
+                      ) : (
+                        <span>Pick a date</span>
+                      )}
+                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                    </Button>
+                  </FormControl>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={field.value ?? undefined}
+                    onSelect={(date) => field.onChange(date ?? null)}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
         {error && (
           <p className="text-sm font-medium text-destructive">Error: {error}</p>

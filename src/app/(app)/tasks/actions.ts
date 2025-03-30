@@ -25,6 +25,7 @@ function createClient() {
 interface AddTaskData {
   title: string
   description?: string
+  due_date?: string | null
 }
 
 // Type for UpdateTaskData
@@ -33,6 +34,7 @@ interface UpdateTaskData {
   title?: string
   description?: string
   status?: string
+  due_date?: string | null
 }
 
 // --- Server Actions ---
@@ -81,7 +83,8 @@ export async function addTask(
     user_id: userId,
     title: formData.title,
     description: formData.description || null,
-    status: "todo" // Default status
+    status: "todo", // Default status
+    due_date: formData.due_date || null
   }
 
   // 3. Insert into Supabase
@@ -146,11 +149,13 @@ export async function updateTask(
   // 2. Prepare update data (only include fields that are provided)
   const { id, ...updateData } = formData
   // Clean up undefined fields if necessary, though Supabase might handle this
-  const dataToUpdate: Partial<Task> = {}
+  const dataToUpdate: Partial<Omit<Task, "id" | "user_id" | "created_at">> = {}
   if (updateData.title !== undefined) dataToUpdate.title = updateData.title
   if (updateData.description !== undefined)
     dataToUpdate.description = updateData.description
   if (updateData.status !== undefined) dataToUpdate.status = updateData.status
+  if (updateData.due_date !== undefined)
+    dataToUpdate.due_date = updateData.due_date
 
   if (Object.keys(dataToUpdate).length === 0) {
     return { success: false, error: "No fields provided for update." }

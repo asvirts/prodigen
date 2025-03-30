@@ -166,7 +166,7 @@ export async function getTodaysLoggedHabitIds(): Promise<{ loggedHabitIds: Set<n
     // 1. Get current user
     const { data: userData, error: userError } = await supabase.auth.getUser();
     if (userError || !userData?.user) {
-        console.error('Authentication Error fetching today's logs:', userError);
+        console.error("Authentication Error fetching today's logs:", userError);
         return { loggedHabitIds: null, error: 'User not authenticated.' };
     }
     const userId = userData.user.id;
