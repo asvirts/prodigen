@@ -38,6 +38,14 @@ interface AddHabitData {
   goal_frequency?: string
 }
 
+// Type for the data coming from the edit habit form
+interface UpdateHabitData {
+    id: number;
+    name?: string;
+    description?: string;
+    goal_frequency?: string;
+}
+
 // --- Server Actions ---
 
 // Function to get habits for the current user
@@ -184,5 +192,75 @@ export async function getTodaysLoggedHabitIds(): Promise<{ loggedHabitIds: Set<n
     return { loggedHabitIds, error: null };
 }
 
-// TODO: Implement updateHabit, deleteHabit actions
+// Server Action to delete a habit
+export async function deleteHabit(habitId: number): Promise<{ success: boolean, error: string | null }> {
+    const supabase = createClient();
+
+    // 1. Get user (RLS handles ownership check)
+    const { data: userData, error: userError } = await supabase.auth.getUser();
+    if (userError || !userData?.user) {
+        return { success: false, error: 'User not authenticated.' };
+    }
+
+    // 2. Delete from Supabase (logs will cascade delete due to foreign key constraint)
+    const { error } = await supabase
+        .from('p-habits')
+        .delete()
+        .match({ id: habitId });
+
+    if (error) {
+        console.error('Error deleting habit:', error);
+        return { success: false, error: 'Failed to delete habit. ' + error.message };
+    }
+
+    // 3. Revalidate the wellness page path
+    revalidatePath('/wellness');
+
+    return { success: true, error: null };
+}
+
+// Server Action to update an existing habit
+export async function updateHabit(formData: UpdateHabitData): Promise<{ success: boolean, error: string | null }> {
+    const supabase = createClient();
+
+    // 1. Get user (RLS handles ownership)
+    const { data: userData, error: userError } = await supabase.auth.getUser();
+    if (userError || !userData?.user) {
+        return { success: false, error: 'User not authenticated.' };
+    }
+
+    // 2. Prepare update data
+    const { id, ...updateData } = formData; 
+    const dataToUpdate: Partial<Omit<Habit, 'id' | 'user_id' | 'created_at'>> = {};
+
+    if (updateData.name !== undefined) {
+        if (!updateData.name || updateData.name.length < 2) {
+             return { success: false, error: 'Habit name must be at least 2 characters.' };
+        }
+        dataToUpdate.name = updateData.name;
+    }
+    if (updateData.description !== undefined) dataToUpdate.description = updateData.description;
+    if (updateData.goal_frequency !== undefined) dataToUpdate.goal_frequency = updateData.goal_frequency;
+
+    if (Object.keys(dataToUpdate).length === 0) {
+        return { success: false, error: 'No fields provided for update.' };
+    }
+
+    // 3. Update in Supabase
+    const { error } = await supabase
+        .from('p-habits')
+        .update(dataToUpdate)
+        .match({ id: id });
+
+    if (error) {
+        console.error('Error updating habit:', error);
+        return { success: false, error: 'Failed to update habit. ' + error.message };
+    }
+
+    // 4. Revalidate the wellness page path
+    revalidatePath('/wellness');
+
+    return { success: true, error: null };
+}
+
 // TODO: Implement more generic getWellnessLogs action (e.g., for calendar view)

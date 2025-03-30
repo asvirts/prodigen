@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/card"
 import { AddHabitDialog } from "./_components/add-habit-dialog" // Import the dialog component
 import { LogHabitButton } from "./_components/log-habit-button" // Import the log button
+import { HabitCardActions } from "./_components/habit-card-actions" // Import habit actions
 
 export default async function WellnessPage() {
   // Fetch habits AND today's logged habit IDs concurrently
@@ -48,31 +49,31 @@ export default async function WellnessPage() {
           {habits.map((habit) => {
             const isLoggedToday = loggedHabitIds?.has(habit.id) ?? false // Check if ID is in the Set
             return (
-              <Card key={habit.id}>
-                <CardHeader>
-                  <CardTitle>{habit.name}</CardTitle>
-                  {habit.description && (
-                    <CardDescription>{habit.description}</CardDescription>
-                  )}
-                </CardHeader>
-                <CardContent>
-                  {habit.goal_frequency && (
-                    <p className="text-sm text-muted-foreground mb-2">
-                      Goal: {habit.goal_frequency}
-                    </p>
-                  )}
-                  {/* Pass isLoggedToday to the button component */}
-                  <LogHabitButton
-                    habitId={habit.id}
-                    habitName={habit.name}
-                    isLoggedToday={isLoggedToday}
-                  />
-                </CardContent>
-                {/* TODO: Add Edit/Delete buttons for habits later */}
-                {/* <CardFooter className="flex justify-end gap-2 pt-4">
-                   <Button variant="outline" size="sm">Edit</Button>
-                   <Button variant="destructive" size="sm">Delete</Button>
-                </CardFooter> */}
+              <Card key={habit.id} className="flex flex-col justify-between">
+                <div>
+                  <CardHeader>
+                    <CardTitle>{habit.name}</CardTitle>
+                    {habit.description && (
+                      <CardDescription>{habit.description}</CardDescription>
+                    )}
+                  </CardHeader>
+                  <CardContent>
+                    {habit.goal_frequency && (
+                      <p className="text-sm text-muted-foreground mb-2">
+                        Goal: {habit.goal_frequency}
+                      </p>
+                    )}
+                    {/* Pass isLoggedToday to the button component */}
+                    <LogHabitButton
+                      habitId={habit.id}
+                      habitName={habit.name}
+                      isLoggedToday={isLoggedToday}
+                    />
+                  </CardContent>
+                </div>
+                <CardFooter className="pt-4 border-t mt-4">
+                  <HabitCardActions habit={habit} />
+                </CardFooter>
               </Card>
             )
           })}
