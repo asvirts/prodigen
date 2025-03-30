@@ -12,6 +12,7 @@ import {
 import { deleteHabit, Habit, updateHabit } from "../actions" // Import delete action, Habit type, and update action
 import { Loader2 } from "lucide-react"
 import { EditHabitForm } from "./edit-habit-form" // Import edit form
+import { toast } from "sonner" // Import toast
 // TODO: Import Dialog and EditHabitForm later
 
 interface HabitCardActionsProps {
@@ -20,19 +21,18 @@ interface HabitCardActionsProps {
 
 export function HabitCardActions({ habit }: HabitCardActionsProps) {
   const [isDeleting, startDeleteTransition] = useTransition()
-  const [deleteError, setDeleteError] = useState<string | null>(null)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false) // State for dialog
 
   const handleDelete = () => {
     // Optional: Add confirmation dialog
     // if (!confirm('Are you sure you want to delete this habit and all its logs?')) return;
 
-    setDeleteError(null)
     startDeleteTransition(async () => {
       const result = await deleteHabit(habit.id)
       if (result?.error) {
-        setDeleteError(result.error)
-        console.error(`Delete failed for ${habit.name}:`, result.error)
+        toast.error(`Failed to delete habit: ${result.error}`) // Error toast
+      } else {
+        toast.success("Habit deleted successfully!") // Success toast
       }
       // Revalidation happens in action
     })
@@ -40,9 +40,6 @@ export function HabitCardActions({ habit }: HabitCardActionsProps) {
 
   return (
     <div className="flex flex-col items-start gap-1 mt-2">
-      {deleteError && (
-        <p className="text-xs text-red-500">Error: {deleteError}</p>
-      )}
       <div className="flex justify-end gap-2 w-full">
         {/* Wrap Edit button in Dialog */}
         <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
@@ -61,7 +58,10 @@ export function HabitCardActions({ habit }: HabitCardActionsProps) {
             </DialogHeader>
             <EditHabitForm
               habit={habit}
-              onSuccess={() => setIsEditDialogOpen(false)} // Close dialog on success
+              onSuccess={() => {
+                setIsEditDialogOpen(false)
+                toast.success("Habit updated successfully!") // Success toast
+              }}
             />
           </DialogContent>
         </Dialog>

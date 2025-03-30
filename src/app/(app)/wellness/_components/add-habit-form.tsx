@@ -4,6 +4,7 @@ import React, { useState, useTransition } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
+import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -28,7 +29,6 @@ const habitFormSchema = z.object({
 })
 
 export function AddHabitForm({ onSuccess }: { onSuccess?: () => void }) {
-  const [error, setError] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
 
   const form = useForm<z.infer<typeof habitFormSchema>>({
@@ -41,7 +41,6 @@ export function AddHabitForm({ onSuccess }: { onSuccess?: () => void }) {
   })
 
   function onSubmit(values: z.infer<typeof habitFormSchema>) {
-    setError(null)
     startTransition(async () => {
       try {
         const result = await addHabit(values)
@@ -51,11 +50,11 @@ export function AddHabitForm({ onSuccess }: { onSuccess?: () => void }) {
         }
 
         form.reset()
-        console.log("Habit added successfully!")
+        toast.success("Habit added successfully!")
         onSuccess?.() // Call callback on success
       } catch (err) {
         console.error(err)
-        setError(
+        toast.error(
           err instanceof Error ? err.message : "An unexpected error occurred."
         )
       }
@@ -112,10 +111,6 @@ export function AddHabitForm({ onSuccess }: { onSuccess?: () => void }) {
             </FormItem>
           )}
         />
-
-        {error && (
-          <p className="text-sm font-medium text-destructive">Error: {error}</p>
-        )}
 
         <Button type="submit" disabled={isPending} className="w-full">
           {isPending ? "Adding Habit..." : "Add Habit"}

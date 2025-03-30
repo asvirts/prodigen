@@ -4,6 +4,7 @@ import React, { useState, useTransition, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { addWellnessLog } from "../actions" // Import the action
 import { Loader2, Check } from "lucide-react" // For loading spinner and Check icon
+import { toast } from "sonner" // Import toast
 
 interface LogHabitButtonProps {
   habitId: number
@@ -17,8 +18,6 @@ export function LogHabitButton({
   isLoggedToday
 }: LogHabitButtonProps) {
   const [isPending, startTransition] = useTransition()
-  const [error, setError] = useState<string | null>(null)
-  // Use isLoggedToday prop for initial logged state, allow temporary success state
   const [isLocallyLogged, setIsLocallyLogged] = useState(isLoggedToday)
   const [showSuccess, setShowSuccess] = useState(false)
 
@@ -30,15 +29,11 @@ export function LogHabitButton({
   const handleLog = () => {
     if (isLocallyLogged) return // Don't re-log if already logged
 
-    setError(null)
     setShowSuccess(false)
     startTransition(async () => {
       const result = await addWellnessLog(habitId)
       if (result?.error) {
-        setError(result.error)
-        console.error(`Log failed for ${habitName}:`, result.error)
-        // Revert local state on error?
-        // setIsLocallyLogged(false);
+        toast.error(`Failed to log ${habitName}: ${result.error}`) // Error toast
       } else {
         setIsLocallyLogged(true) // Optimistically update local state
         setShowSuccess(true)
@@ -96,7 +91,6 @@ export function LogHabitButton({
       >
         {buttonContent}
       </Button>
-      {error && <p className="text-xs text-red-500">Error: {error}</p>}
     </div>
   )
 }

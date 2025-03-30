@@ -13,6 +13,8 @@ import {
 } from "@/components/ui/dialog"
 import { deleteTask, Task, updateTask } from "../actions"
 import { EditTaskForm } from "./edit-task-form"
+import { Loader2 } from "lucide-react"
+import { toast } from "sonner"
 
 interface TaskCardActionsProps {
   task: Task
@@ -21,25 +23,20 @@ interface TaskCardActionsProps {
 export function TaskCardActions({ task }: TaskCardActionsProps) {
   const [isPendingDelete, startDeleteTransition] = useTransition()
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
-  const [deleteError, setDeleteError] = useState<string | null>(null)
 
   const handleDelete = () => {
-    setDeleteError(null)
     startDeleteTransition(async () => {
       const result = await deleteTask(task.id)
       if (result?.error) {
-        setDeleteError(result.error)
-        console.error("Delete failed:", result.error)
+        toast.error(`Failed to delete task: ${result.error}`)
+      } else {
+        toast.success("Task deleted successfully!")
       }
     })
   }
 
   return (
     <div className="flex justify-end gap-2 items-center">
-      {deleteError && (
-        <p className="text-xs text-red-500 mr-2">Error: {deleteError}</p>
-      )}
-
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogTrigger asChild>
           <Button variant="outline" size="sm" disabled={isPendingDelete}>
@@ -52,7 +49,10 @@ export function TaskCardActions({ task }: TaskCardActionsProps) {
           </DialogHeader>
           <EditTaskForm
             task={task}
-            onSuccess={() => setIsEditDialogOpen(false)}
+            onSuccess={() => {
+              setIsEditDialogOpen(false)
+              toast.success("Task updated successfully!")
+            }}
           />
         </DialogContent>
       </Dialog>

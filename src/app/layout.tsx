@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 // import { Geist, Geist_Mono } from "next/font/google"; // Remove Geist
 import { Inter } from "next/font/google" // Add Inter
+import { Toaster } from "sonner" // Correct the import path for Toaster
 import "./globals.css"
 
 // const geistSans = Geist({ // Remove Geist setup
@@ -35,6 +36,7 @@ export default function RootLayout({
         className={`${inter.variable} font-sans antialiased`} // Use Inter font variable
       >
         {children}
+        <Toaster richColors position="top-right" /> {/* Add Toaster here */}
       </body>
     </html>
   )

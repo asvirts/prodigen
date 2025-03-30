@@ -17,6 +17,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { addTask } from "../actions" // Import the actual server action
+import { toast } from "sonner" // Import toast
 // import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 // import { Calendar } from "@/components/ui/calendar"
 // import { cn } from "@/lib/utils"
@@ -31,8 +32,6 @@ const formSchema = z.object({
 })
 
 export function AddTaskForm() {
-  const [error, setError] = useState<string | null>(null)
-  const [successMessage, setSuccessMessage] = useState<string | null>(null) // Add success state
   const [isPending, startTransition] = useTransition()
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -44,26 +43,21 @@ export function AddTaskForm() {
   })
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    setError(null)
-    setSuccessMessage(null)
     startTransition(async () => {
       try {
-        // Call the actual server action
         const result = await addTask(values)
 
         if (result?.error) {
           throw new Error(result.error)
         }
 
-        form.reset() // Reset form on success
-        setSuccessMessage("Task added successfully!")
-        // Clear success message after a delay
-        setTimeout(() => setSuccessMessage(null), 3000)
+        form.reset()
+        toast.success("Task added successfully!") // Success toast
       } catch (err) {
         console.error(err)
-        setError(
+        toast.error(
           err instanceof Error ? err.message : "An unexpected error occurred."
-        )
+        ) // Error toast
       }
     })
   }
@@ -101,14 +95,6 @@ export function AddTaskForm() {
           )}
         />
         {/* TODO: Add Date Picker Field here */}
-
-        {/* Display messages */}
-        {error && (
-          <p className="text-sm font-medium text-destructive">Error: {error}</p>
-        )}
-        {successMessage && (
-          <p className="text-sm font-medium text-green-600">{successMessage}</p>
-        )}
 
         <Button type="submit" disabled={isPending}>
           {isPending ? "Adding Task..." : "Add Task"}
