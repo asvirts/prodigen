@@ -64,12 +64,14 @@ export default function Header({ user }: HeaderProps) {
             >
               Finance
             </Link>
-            {/* Example for other links (create pages later) 
-             <Link
-              href="/finance"
+            {/* Add Wellness link */}
+            <Link
+              href="/wellness"
+              className="transition-colors hover:text-foreground/80 text-foreground/60"
             >
-              Finance
-            </Link> */}
+              Wellness
+            </Link>
+            {/* Example for other links (create pages later) */}
           </nav>
         </div>
         {/* TODO: Add mobile navigation toggle */}

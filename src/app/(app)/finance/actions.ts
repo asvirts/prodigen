@@ -1,6 +1,7 @@
 "use server"
 
-import { createClient } from "@/lib/supabase/server"
+import { cookies } from "next/headers"
+import { createClient as createServerSupabaseClient } from "@/lib/supabase/server"
 import { revalidatePath } from "next/cache"
 
 // Define the Transaction type based on your Supabase table
@@ -13,6 +14,12 @@ export type Transaction = {
   date: string // ISO 8601 date string (YYYY-MM-DD)
   category?: string | null
   created_at: string // ISO 8601 timestamp string
+}
+
+// Helper function to create client within actions
+function createClient() {
+  const cookieStore = cookies()
+  return createServerSupabaseClient(cookieStore)
 }
 
 // --- Server Actions ---

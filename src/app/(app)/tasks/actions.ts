@@ -1,6 +1,7 @@
 "use server"
 
-import { createClient } from "@/lib/supabase/server"
+import { cookies } from "next/headers"
+import { createClient as createServerSupabaseClient } from "@/lib/supabase/server"
 import { revalidatePath } from "next/cache"
 
 // Define the Task type based on your Supabase table
@@ -12,6 +13,26 @@ export type Task = {
   status: string // 'todo', 'in_progress', 'done'
   due_date?: string | null // ISO 8601 date string (YYYY-MM-DD)
   created_at: string // ISO 8601 timestamp string
+}
+
+// Helper function to create client within actions
+function createClient() {
+  const cookieStore = cookies()
+  return createServerSupabaseClient(cookieStore)
+}
+
+// Type for AddTaskData
+interface AddTaskData {
+  title: string
+  description?: string
+}
+
+// Type for UpdateTaskData
+interface UpdateTaskData {
+  id: number
+  title?: string
+  description?: string
+  status?: string
 }
 
 // --- Server Actions ---
@@ -41,13 +62,6 @@ export async function getTasks(): Promise<{
   return { tasks: data as Task[], error: null }
 }
 
-// Type for the data coming from the form (schema defined in AddTaskForm)
-interface AddTaskData {
-  title: string
-  description?: string
-  // due_date?: Date; // Add later if using date picker
-}
-
 // Server Action to add a new task
 export async function addTask(
   formData: AddTaskData
@@ -68,7 +82,6 @@ export async function addTask(
     title: formData.title,
     description: formData.description || null,
     status: "todo" // Default status
-    // due_date: formData.due_date ? formData.due_date.toISOString().split('T')[0] : null // Format date if present
   }
 
   // 3. Insert into Supabase
@@ -117,16 +130,6 @@ export async function deleteTask(
   return { success: true, error: null }
 }
 
-// Type for the data coming from the edit form
-// All fields are optional except the id
-interface UpdateTaskData {
-  id: number
-  title?: string
-  description?: string
-  status?: string // 'todo', 'in_progress', 'done'
-  // due_date?: Date | null; // Add later if using date picker
-}
-
 // Server Action to update an existing task
 export async function updateTask(
   formData: UpdateTaskData
@@ -148,7 +151,6 @@ export async function updateTask(
   if (updateData.description !== undefined)
     dataToUpdate.description = updateData.description
   if (updateData.status !== undefined) dataToUpdate.status = updateData.status
-  // if (updateData.due_date !== undefined) dataToUpdate.due_date = updateData.due_date ? updateData.due_date.toISOString().split('T')[0] : null;
 
   if (Object.keys(dataToUpdate).length === 0) {
     return { success: false, error: "No fields provided for update." }
