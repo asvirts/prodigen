@@ -14,6 +14,9 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { createClient } from "@/lib/supabase/client" // Use client client for actions triggered by user
 import { useRouter } from "next/navigation"
+import { ThemeToggle } from "@/components/theme-toggle" // Import ThemeToggle
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet" // Import Sheet
+import { Menu } from "lucide-react" // Import Menu icon
 
 interface HeaderProps {
   user: User
@@ -37,11 +40,13 @@ export default function Header({ user }: HeaderProps) {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 max-w-screen-2xl items-center">
+        {/* Desktop Navigation Area - Hide on small screens */}
         <div className="mr-4 hidden md:flex">
           <Link href="/" className="mr-6 flex items-center space-x-2">
             {/* <Icons.logo className="h-6 w-6" /> // Replace with your logo later */}
             <span className="hidden font-bold sm:inline-block">Prodigen</span>
           </Link>
+          {/* Desktop Nav Links */}
           <nav className="flex items-center gap-6 text-sm">
             {/* Add Navigation Links here later e.g., Tasks, Finance, Wellness */}
             <Link
@@ -74,8 +79,64 @@ export default function Header({ user }: HeaderProps) {
             {/* Example for other links (create pages later) */}
           </nav>
         </div>
-        {/* TODO: Add mobile navigation toggle */}
-        <div className="flex flex-1 items-center justify-end space-x-4">
+
+        {/* Mobile Menu - Visible only on small screens */}
+        <div className="md:hidden mr-4">
+          {" "}
+          {/* Show only on md and below */}
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <Menu className="h-6 w-6" />
+                <span className="sr-only">Toggle Menu</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left">
+              {" "}
+              {/* Slide from left */}
+              {/* Mobile Nav Links */}
+              <nav className="grid gap-6 text-lg font-medium mt-6">
+                <Link
+                  href="/"
+                  className="hover:text-foreground/80 text-foreground/60"
+                >
+                  Dashboard
+                </Link>
+                <Link
+                  href="/tasks"
+                  className="hover:text-foreground/80 text-foreground/60"
+                >
+                  Tasks
+                </Link>
+                <Link
+                  href="/finance"
+                  className="hover:text-foreground/80 text-foreground/60"
+                >
+                  Finance
+                </Link>
+                <Link
+                  href="/wellness"
+                  className="hover:text-foreground/80 text-foreground/60"
+                >
+                  Wellness
+                </Link>
+              </nav>
+            </SheetContent>
+          </Sheet>
+        </div>
+
+        {/* Mobile - App Title (Optional - If you want title visible on mobile when menu button is there) */}
+        {/* <Link href="/" className="flex items-center space-x-2 md:hidden">
+            <span className="font-bold">Prodigen</span>
+        </Link> */}
+
+        {/* Right Side Actions (Theme Toggle, User Menu) */}
+        <div className="flex flex-1 items-center justify-end space-x-2 md:space-x-4">
+          {" "}
+          {/* Adjust spacing */}
+          {/* Add Theme Toggle Before User Menu */}
+          <ThemeToggle />
+          {/* User Dropdown Menu */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-8 w-8 rounded-full">

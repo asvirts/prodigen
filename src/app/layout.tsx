@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 // import { Geist, Geist_Mono } from "next/font/google"; // Remove Geist
 import { Inter } from "next/font/google" // Add Inter
 import { Toaster } from "sonner" // Correct the import path for Toaster
+import { ThemeProvider } from "@/components/theme-provider" // Import ThemeProvider
 import "./globals.css"
 
 // const geistSans = Geist({ // Remove Geist setup
@@ -35,8 +36,15 @@ export default function RootLayout({
         // className={`${geistSans.variable} ${geistMono.variable} antialiased`} // Update className
         className={`${inter.variable} font-sans antialiased`} // Use Inter font variable
       >
-        {children}
-        <Toaster richColors position="top-right" /> {/* Add Toaster here */}
+        <ThemeProvider
+          attribute="class" // Use class-based theme switching
+          defaultTheme="system" // Default to system preference
+          enableSystem // Enable system preference detection
+          disableTransitionOnChange // Prevent transitions on theme change
+        >
+          {children}
+          <Toaster richColors position="top-right" /> {/* Add Toaster here */}
+        </ThemeProvider>
       </body>
     </html>
   )
