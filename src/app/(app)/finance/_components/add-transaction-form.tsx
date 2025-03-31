@@ -1,14 +1,14 @@
-"use client";
+"use client"
 
-import React, { useState } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
-import { format } from "date-fns"; // For date formatting
-import { CalendarIcon } from "lucide-react"; // Icon for date picker
-import { cn } from "@/lib/utils";
+import React, { useState } from "react"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import * as z from "zod"
+import { format } from "date-fns" // For date formatting
+import { CalendarIcon } from "lucide-react" // Icon for date picker
+import { cn } from "@/lib/utils"
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button"
 import {
   Form,
   FormControl,
@@ -16,23 +16,23 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea"; // Using Textarea for description
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea" // Using Textarea for description
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Calendar } from "@/components/ui/calendar";
+} from "@/components/ui/select"
+import { Calendar } from "@/components/ui/calendar"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
-import { useAddTransaction } from "../hooks"; // Import the React Query hook
+} from "@/components/ui/popover"
+import { useAddTransaction } from "../hooks" // Import the React Query hook
 
 // Form schema using Zod with enhanced client-side validation
 const transactionFormSchema = z.object({
@@ -61,19 +61,22 @@ const transactionFormSchema = z.object({
     .string()
     .optional()
     .transform((val) => (val === "" ? undefined : val)), // Transform empty string to undefined
-});
+})
 
 interface AddTransactionFormProps {
   onSuccess?: () => void
   existingCategories: string[]
 }
 
-export function AddTransactionForm({ onSuccess, existingCategories }: AddTransactionFormProps) {
-  const [error, setError] = useState<string | null>(null);
+export function AddTransactionForm({
+  onSuccess,
+  existingCategories,
+}: AddTransactionFormProps) {
+  const [error, setError] = useState<string | null>(null)
 
   // Use our custom React Query mutation hook
   const { addTransaction: mutateAddTransaction, isSubmitting } =
-    useAddTransaction();
+    useAddTransaction()
 
   const form = useForm<z.infer<typeof transactionFormSchema>>({
     resolver: zodResolver(transactionFormSchema),
@@ -85,13 +88,13 @@ export function AddTransactionForm({ onSuccess, existingCategories }: AddTransac
       category: "",
     },
     mode: "onChange", // Enable validation on change for better UX
-  });
+  })
 
   function onSubmit(values: z.infer<typeof transactionFormSchema>) {
-    setError(null);
+    setError(null)
 
     // Format date to 'YYYY-MM-DD' string before sending to server action
-    const dateString = format(values.date, "yyyy-MM-dd");
+    const dateString = format(values.date, "yyyy-MM-dd")
 
     mutateAddTransaction(
       {
@@ -106,14 +109,14 @@ export function AddTransactionForm({ onSuccess, existingCategories }: AddTransac
             type: undefined,
             date: new Date(),
             category: "",
-          });
-          onSuccess?.();
+          })
+          onSuccess?.()
         },
         onError: (err) => {
-          setError(String(err));
+          setError(String(err))
         },
-      },
-    );
+      }
+    )
   }
 
   return (
@@ -150,12 +153,12 @@ export function AddTransactionForm({ onSuccess, existingCategories }: AddTransac
                     value={field.value ?? ""}
                     onChange={(e) => {
                       // Additional client-side validation
-                      const value = e.target.value;
+                      const value = e.target.value
                       if (
                         value === "" ||
                         (!isNaN(parseFloat(value)) && parseFloat(value) >= 0)
                       ) {
-                        field.onChange(e);
+                        field.onChange(e)
                       }
                     }}
                   />
@@ -203,16 +206,17 @@ export function AddTransactionForm({ onSuccess, existingCategories }: AddTransac
                         variant={"outline"}
                         className={cn(
                           "w-[240px] pl-3 text-left font-normal",
-                          !field.value && "text-muted-foreground",
-                      )}
-                    >
-                      {field.value ? (
-                        format(field.value, "PPP")
-                      ) : (
-                        <span>Pick a date</span>
-                      )}
-                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                    </Button>
+                          !field.value && "text-muted-foreground"
+                        )}
+                      >
+                        {field.value ? (
+                          format(field.value, "PPP")
+                        ) : (
+                          <span>Pick a date</span>
+                        )}
+                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                      </Button>
+                    </FormControl>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
                     <Calendar
@@ -220,7 +224,7 @@ export function AddTransactionForm({ onSuccess, existingCategories }: AddTransac
                       selected={field.value}
                       onSelect={(date) => {
                         if (date) {
-                          field.onChange(date);
+                          field.onChange(date)
                         }
                       }}
                       disabled={(date) =>
@@ -240,10 +244,7 @@ export function AddTransactionForm({ onSuccess, existingCategories }: AddTransac
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Category</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  value={field.value}
-                >
+                <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select or create a category" />
@@ -282,5 +283,5 @@ export function AddTransactionForm({ onSuccess, existingCategories }: AddTransac
         </Button>
       </form>
     </Form>
-  );
+  )
 }
