@@ -7,16 +7,16 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
+  DialogTrigger
 } from "@/components/ui/dialog"
 import { AddTransactionForm } from "./add-transaction-form"
 
 interface AddTransactionDialogProps {
-  existingCategories: string[]
+  budgetedCategories: string[]
 }
 
 export function AddTransactionDialog({
-  existingCategories,
+  budgetedCategories
 }: AddTransactionDialogProps) {
   const [isOpen, setIsOpen] = useState(false)
 
@@ -29,9 +29,8 @@ export function AddTransactionDialog({
         <DialogHeader>
           <DialogTitle>Add New Transaction</DialogTitle>
         </DialogHeader>
-        {/* Pass callback to close dialog on successful form submission */}
         <AddTransactionForm
-          existingCategories={existingCategories}
+          budgetedCategories={budgetedCategories}
           onSuccess={() => setIsOpen(false)}
         />
       </DialogContent>

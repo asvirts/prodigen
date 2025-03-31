@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -8,11 +9,11 @@ import {
   CardDescription,
   CardFooter,
   CardHeader,
-  CardTitle,
+  CardTitle
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { createClient } from "@/lib/supabase/client" // Use the client component client
+import { createClient } from "@/lib/supabase/client"
 
 export default function AuthPage() {
   const [email, setEmail] = useState("")
@@ -20,74 +21,73 @@ export default function AuthPage() {
   const [error, setError] = useState<string | null>(null)
   const [message, setMessage] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const router = useRouter()
 
+  // Initialize supabase client synchronously
   const supabase = createClient()
 
   const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
+    // Remove supabase check, it's guaranteed to be initialized
     setLoading(true)
     setError(null)
     setMessage(null)
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { error: loginError } = await supabase.auth.signInWithPassword({
         email,
-        password,
+        password
       })
 
-      if (error) {
-        if (error.message.includes("Failed host lookup")) {
-          setError(
-            "Unable to connect to authentication service. Please check your internet connection."
-          )
-        } else if (error.message.includes("Invalid login credentials")) {
-          setError("Invalid email or password. Please try again.")
+      if (loginError) {
+        // Simplified error handling for brevity (keep existing logic if preferred)
+        if (loginError.message.includes("Invalid login credentials")) {
+          setError("Invalid email or password.")
         } else {
-          setError(`Authentication error: ${error.message}`)
+          setError(`Authentication error: ${loginError.message}`)
         }
       } else {
         setMessage("Login successful! Redirecting...")
-        window.location.href = "/"
+        router.push("/")
+        // Keep refresh if server data needs immediate update after redirect
+        router.refresh()
       }
-    } catch (e) {
-      console.error("Authentication error:", e)
-      setError("An unexpected error occurred. Please try again later.")
+    } catch (e: unknown) {
+      console.error("Login catch block error:", e)
+      setError("An unexpected error occurred during login.")
     } finally {
       setLoading(false)
     }
   }
 
   const handleSignUp = async () => {
+    // Remove supabase check
     setLoading(true)
     setError(null)
     setMessage(null)
 
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        // Optionally, add email confirmation
-        // emailRedirectTo: `${window.location.origin}/auth/callback`,
-      },
-    })
+    try {
+      const { data, error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback`
+        }
+      })
 
-    if (error) {
-      setError(error.message)
-    } else if (data.user && data.user.identities?.length === 0) {
-      // If email confirmation is required, Supabase returns a user, but indicates confirmation is needed.
-      setError(
-        "Confirmation email sent, but account already exists. Please login."
-      )
-    } else if (data.user) {
-      setMessage(
-        "Sign up successful! Check your email for confirmation if required."
-      )
-    } else {
-      setMessage(
-        "Sign up successful! Check your email for confirmation if required."
-      )
+      if (signUpError) {
+        setError(signUpError.message)
+      } else if (data.user && data.user.identities?.length === 0) {
+        setError("Account exists, but confirmation required or already sent.")
+      } else {
+        setMessage("Sign up successful! Check email for confirmation.")
+      }
+    } catch (e: unknown) {
+      console.error("Signup catch block error:", e)
+      setError("An unexpected error occurred during sign up.")
+    } finally {
+      setLoading(false)
     }
-    setLoading(false)
   }
 
   return (

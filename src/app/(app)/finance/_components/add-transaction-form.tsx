@@ -15,7 +15,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
+  FormMessage
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea" // Using Textarea for description
@@ -24,15 +24,16 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
+  SelectValue
 } from "@/components/ui/select"
 import { Calendar } from "@/components/ui/calendar"
 import {
   Popover,
   PopoverContent,
-  PopoverTrigger,
+  PopoverTrigger
 } from "@/components/ui/popover"
-import { useAddTransaction } from "../hooks" // Import the React Query hook
+import { useAddTransaction, useUpdateTransaction } from "../hooks" // Import both hooks
+import { Transaction } from "../actions" // Import Transaction type
 
 // Form schema using Zod with enhanced client-side validation
 const transactionFormSchema = z.object({
@@ -44,84 +45,120 @@ const transactionFormSchema = z.object({
     .number()
     .positive({ message: "Amount must be a positive number." })
     .refine((val) => val <= 1000000, {
-      message: "Amount must be less than 1,000,000",
+      message: "Amount must be less than 1,000,000"
     }), // Add a reasonable max value
   type: z.enum(["income", "expense"], {
-    required_error: "Please select a transaction type.",
+    required_error: "Please select a transaction type."
   }),
   date: z
     .date({
       required_error: "A date is required.",
-      invalid_type_error: "That's not a valid date!",
+      invalid_type_error: "That's not a valid date!"
     })
-    .refine((date) => date <= new Date() && date >= new Date("1900-01-01"), {
-      message: "Date must be in the past and after 1900",
+    .refine((date) => date >= new Date("1900-01-01"), {
+      message: "Date must be after 1900"
     }),
   category: z
     .string()
     .optional()
-    .transform((val) => (val === "" ? undefined : val)), // Transform empty string to undefined
+    .transform((val) => (val === "" ? undefined : val)) // Transform empty string to undefined
 })
 
 interface AddTransactionFormProps {
   onSuccess?: () => void
-  existingCategories: string[]
+  budgetedCategories: string[]
+  initialData?: Transaction
 }
 
 export function AddTransactionForm({
   onSuccess,
-  existingCategories,
+  budgetedCategories,
+  initialData
 }: AddTransactionFormProps) {
   const [error, setError] = useState<string | null>(null)
 
-  // Use our custom React Query mutation hook
-  const { addTransaction: mutateAddTransaction, isSubmitting } =
+  // Get both mutation hooks
+  const { addTransaction: mutateAddTransaction, isSubmitting: isAdding } =
     useAddTransaction()
+  const {
+    updateTransaction: mutateUpdateTransaction,
+    isSubmitting: isUpdating
+  } = useUpdateTransaction()
+
+  // Determine if we are editing
+  const isEditMode = !!initialData
 
   const form = useForm<z.infer<typeof transactionFormSchema>>({
     resolver: zodResolver(transactionFormSchema),
-    defaultValues: {
-      description: "",
-      amount: undefined, // Start with undefined amount
-      type: undefined,
-      date: new Date(), // Default to today
-      category: "",
-    },
-    mode: "onChange", // Enable validation on change for better UX
+    // Set default values based on initialData if editing
+    defaultValues: isEditMode
+      ? {
+          description: initialData.description,
+          // Ensure amount is treated as number
+          amount: Number(initialData.amount),
+          type: initialData.type,
+          // Parse date string back to Date object for the form
+          date: new Date(initialData.date),
+          category: initialData.category ?? "" // Handle null category
+        }
+      : {
+          description: "",
+          amount: undefined,
+          type: undefined,
+          date: new Date(),
+          category: ""
+        },
+    mode: "onChange"
   })
 
   function onSubmit(values: z.infer<typeof transactionFormSchema>) {
     setError(null)
 
-    // Format date to 'YYYY-MM-DD' string before sending to server action
     const dateString = format(values.date, "yyyy-MM-dd")
 
-    mutateAddTransaction(
-      {
-        ...values,
-        date: dateString,
+    const submissionData = {
+      ...values,
+      date: dateString
+    }
+
+    const mutationOptions = {
+      onSuccess: () => {
+        form.reset(
+          isEditMode
+            ? undefined
+            : {
+                description: "",
+                amount: undefined,
+                type: undefined,
+                date: new Date(),
+                category: ""
+              } // Reset to defaults only when adding
+        )
+        onSuccess?.() // Close dialog/modal
       },
-      {
-        onSuccess: () => {
-          form.reset({
-            description: "",
-            amount: undefined,
-            type: undefined,
-            date: new Date(),
-            category: "",
-          })
-          onSuccess?.()
-        },
-        onError: (err) => {
-          setError(String(err))
-        },
+      onError: (err: unknown) => {
+        // Display a generic error or parse the specific error message
+        setError(err instanceof Error ? err.message : String(err))
       }
-    )
+    }
+
+    if (isEditMode) {
+      // Call update mutation
+      mutateUpdateTransaction(
+        { ...submissionData, id: initialData.id }, // Include ID for update
+        mutationOptions
+      )
+    } else {
+      // Call add mutation
+      mutateAddTransaction(submissionData, mutationOptions)
+    }
   }
+
+  // Determine combined loading state
+  const isSubmitting = isAdding || isUpdating
 
   return (
     <Form {...form}>
-      {/* Using Textarea for description */}
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <FormField
           control={form.control}
@@ -199,13 +236,13 @@ export function AddTransactionForm({
             render={({ field }) => (
               <FormItem className="flex flex-col pt-2">
                 <FormLabel>Date</FormLabel>
-                <Popover>
+                <Popover modal={true}>
                   <PopoverTrigger asChild>
                     <FormControl>
                       <Button
                         variant={"outline"}
                         className={cn(
-                          "w-[240px] pl-3 text-left font-normal",
+                          "pl-3 text-left font-normal",
                           !field.value && "text-muted-foreground"
                         )}
                       >
@@ -227,9 +264,7 @@ export function AddTransactionForm({
                           field.onChange(date)
                         }
                       }}
-                      disabled={(date) =>
-                        date > new Date() || date < new Date("1900-01-01")
-                      }
+                      disabled={(date) => date < new Date("1900-01-01")}
                       initialFocus
                     />
                   </PopoverContent>
@@ -244,14 +279,26 @@ export function AddTransactionForm({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Category</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value}>
+                <Select
+                  onValueChange={(value) => {
+                    // If user selects '+ Create New Category', clear the field
+                    // so the input can take over. Otherwise, set the selected value.
+                    field.onChange(value === "new" ? "" : value)
+                  }}
+                  value={
+                    field.value === "" && form.watch("category") !== ""
+                      ? "new"
+                      : (field.value ?? "")
+                  }
+                >
                   <FormControl>
+                    {/* If creating new, show the input field value if typed, else show placeholder */}
                     <SelectTrigger>
                       <SelectValue placeholder="Select or create a category" />
                     </SelectTrigger>
                   </FormControl>
-                  <SelectContent>
-                    {existingCategories.map((category) => (
+                  <SelectContent className="z-50">
+                    {budgetedCategories.map((category) => (
                       <SelectItem key={category} value={category}>
                         {category}
                       </SelectItem>
@@ -259,15 +306,21 @@ export function AddTransactionForm({
                     <SelectItem value="new">+ Create New Category</SelectItem>
                   </SelectContent>
                 </Select>
-                {field.value === "new" && (
-                  <FormControl>
-                    <Input
-                      placeholder="Enter new category name"
-                      onChange={(e) => field.onChange(e.target.value)}
-                      className="mt-2"
-                    />
-                  </FormControl>
-                )}
+                {/* Show Input only when explicitly creating new OR if form value is not an existing option */}
+                {(form.watch("category") === "" ||
+                  !budgetedCategories.includes(form.watch("category") ?? "")) &&
+                  field.value !== "new" &&
+                  form.watch("category") !== "" && (
+                    <FormControl>
+                      <Input
+                        placeholder="Enter new category name"
+                        value={form.watch("category") ?? ""} // Bind directly to form value
+                        onChange={(e) => field.onChange(e.target.value)} // Update form value on change
+                        className="mt-2"
+                        autoFocus
+                      />
+                    </FormControl>
+                  )}
                 <FormMessage />
               </FormItem>
             )}
@@ -279,7 +332,13 @@ export function AddTransactionForm({
         )}
 
         <Button type="submit" disabled={isSubmitting} className="w-full">
-          {isSubmitting ? "Adding Transaction..." : "Add Transaction"}
+          {isSubmitting
+            ? isEditMode
+              ? "Saving Changes..."
+              : "Adding Transaction..."
+            : isEditMode
+              ? "Save Changes"
+              : "Add Transaction"}
         </Button>
       </form>
     </Form>
