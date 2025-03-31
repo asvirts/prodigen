@@ -1,57 +1,74 @@
-"use client"
+"use client";
 
-import React, { useState, useTransition } from "react"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import * as z from "zod"
-import { format } from "date-fns" // For date formatting
-import { CalendarIcon } from "lucide-react" // Icon for date picker
-import { cn } from "@/lib/utils"
+import React, { useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+import { format } from "date-fns"; // For date formatting
+import { CalendarIcon } from "lucide-react"; // Icon for date picker
+import { cn } from "@/lib/utils";
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
-  FormMessage
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea" // Using Textarea for description
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea"; // Using Textarea for description
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue
-} from "@/components/ui/select"
-import { Calendar } from "@/components/ui/calendar"
+  SelectValue,
+} from "@/components/ui/select";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
   PopoverContent,
-  PopoverTrigger
-} from "@/components/ui/popover"
-import { addTransaction } from "../actions" // Import the server action
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { useAddTransaction } from "../hooks"; // Import the React Query hook
 
-// Form schema using Zod
+// Form schema using Zod with enhanced client-side validation
 const transactionFormSchema = z.object({
   description: z
     .string()
-    .min(2, { message: "Description must be at least 2 characters." }),
+    .min(2, { message: "Description must be at least 2 characters." })
+    .max(100, { message: "Description must not exceed 100 characters." }),
   amount: z.coerce
     .number()
-    .positive({ message: "Amount must be a positive number." }), // Coerce input to number
+    .positive({ message: "Amount must be a positive number." })
+    .refine((val) => val <= 1000000, {
+      message: "Amount must be less than 1,000,000",
+    }), // Add a reasonable max value
   type: z.enum(["income", "expense"], {
-    required_error: "Please select a transaction type."
+    required_error: "Please select a transaction type.",
   }),
-  date: z.date({ required_error: "A date is required." }),
-  category: z.string().optional()
-})
+  date: z
+    .date({
+      required_error: "A date is required.",
+      invalid_type_error: "That's not a valid date!",
+    })
+    .refine((date) => date <= new Date() && date >= new Date("1900-01-01"), {
+      message: "Date must be in the past and after 1900",
+    }),
+  category: z
+    .string()
+    .optional()
+    .transform((val) => (val === "" ? undefined : val)), // Transform empty string to undefined
+});
 
 export function AddTransactionForm({ onSuccess }: { onSuccess?: () => void }) {
-  const [error, setError] = useState<string | null>(null)
-  const [isPending, startTransition] = useTransition()
+  const [error, setError] = useState<string | null>(null);
+
+  // Use our custom React Query mutation hook
+  const { addTransaction: mutateAddTransaction, isSubmitting } =
+    useAddTransaction();
 
   const form = useForm<z.infer<typeof transactionFormSchema>>({
     resolver: zodResolver(transactionFormSchema),
@@ -60,37 +77,38 @@ export function AddTransactionForm({ onSuccess }: { onSuccess?: () => void }) {
       amount: undefined, // Start with undefined amount
       type: undefined,
       date: new Date(), // Default to today
-      category: ""
-    }
-  })
+      category: "",
+    },
+    mode: "onChange", // Enable validation on change for better UX
+  });
 
   function onSubmit(values: z.infer<typeof transactionFormSchema>) {
-    setError(null)
-    startTransition(async () => {
-      try {
-        // Format date to 'YYYY-MM-DD' string before sending to server action
-        const dateString = format(values.date, "yyyy-MM-dd")
+    setError(null);
 
-        const result = await addTransaction({
-          ...values,
-          date: dateString
-        })
+    // Format date to 'YYYY-MM-DD' string before sending to server action
+    const dateString = format(values.date, "yyyy-MM-dd");
 
-        if (result?.error) {
-          throw new Error(result.error)
-        }
-
-        form.reset()
-        // Optionally: Show success message or call onSuccess callback
-        console.log("Transaction added successfully!")
-        onSuccess?.()
-      } catch (err) {
-        console.error(err)
-        setError(
-          err instanceof Error ? err.message : "An unexpected error occurred."
-        )
-      }
-    })
+    mutateAddTransaction(
+      {
+        ...values,
+        date: dateString,
+      },
+      {
+        onSuccess: () => {
+          form.reset({
+            description: "",
+            amount: undefined,
+            type: undefined,
+            date: new Date(),
+            category: "",
+          });
+          onSuccess?.();
+        },
+        onError: (err) => {
+          setError(String(err));
+        },
+      },
+    );
   }
 
   return (
@@ -125,6 +143,16 @@ export function AddTransactionForm({ onSuccess }: { onSuccess?: () => void }) {
                     placeholder="0.00"
                     {...field}
                     value={field.value ?? ""}
+                    onChange={(e) => {
+                      // Additional client-side validation
+                      const value = e.target.value;
+                      if (
+                        value === "" ||
+                        (!isNaN(parseFloat(value)) && parseFloat(value) >= 0)
+                      ) {
+                        field.onChange(e);
+                      }
+                    }}
                   />
                 </FormControl>
                 <FormMessage />
@@ -170,7 +198,7 @@ export function AddTransactionForm({ onSuccess }: { onSuccess?: () => void }) {
                         variant={"outline"}
                         className={cn(
                           "pl-3 text-left font-normal",
-                          !field.value && "text-muted-foreground"
+                          !field.value && "text-muted-foreground",
                         )}
                       >
                         {field.value ? (
@@ -222,10 +250,10 @@ export function AddTransactionForm({ onSuccess }: { onSuccess?: () => void }) {
           <p className="text-sm font-medium text-destructive">Error: {error}</p>
         )}
 
-        <Button type="submit" disabled={isPending} className="w-full">
-          {isPending ? "Adding Transaction..." : "Add Transaction"}
+        <Button type="submit" disabled={isSubmitting} className="w-full">
+          {isSubmitting ? "Adding Transaction..." : "Add Transaction"}
         </Button>
       </form>
     </Form>
-  )
+  );
 }
