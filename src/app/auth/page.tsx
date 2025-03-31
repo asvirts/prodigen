@@ -8,7 +8,7 @@ import {
   CardDescription,
   CardFooter,
   CardHeader,
-  CardTitle
+  CardTitle,
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -29,19 +29,32 @@ export default function AuthPage() {
     setError(null)
     setMessage(null)
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password
-    })
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      })
 
-    if (error) {
-      setError(error.message)
-    } else {
-      setMessage("Login successful! Redirecting...")
-      // Redirect user after login - typically handled by middleware or effect
-      window.location.href = "/" // Simple redirect for now
+      if (error) {
+        if (error.message.includes("Failed host lookup")) {
+          setError(
+            "Unable to connect to authentication service. Please check your internet connection."
+          )
+        } else if (error.message.includes("Invalid login credentials")) {
+          setError("Invalid email or password. Please try again.")
+        } else {
+          setError(`Authentication error: ${error.message}`)
+        }
+      } else {
+        setMessage("Login successful! Redirecting...")
+        window.location.href = "/"
+      }
+    } catch (e) {
+      console.error("Authentication error:", e)
+      setError("An unexpected error occurred. Please try again later.")
+    } finally {
+      setLoading(false)
     }
-    setLoading(false)
   }
 
   const handleSignUp = async () => {
@@ -55,7 +68,7 @@ export default function AuthPage() {
       options: {
         // Optionally, add email confirmation
         // emailRedirectTo: `${window.location.origin}/auth/callback`,
-      }
+      },
     })
 
     if (error) {
