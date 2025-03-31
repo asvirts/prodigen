@@ -21,7 +21,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} font-sans antialiased`}>
         <Providers>
-          <div className="flex justify-center max-w-7xl">{children}</div>
+          <div className="flex justify-center">{children}</div>
           <Toaster richColors position="top-right" />
         </Providers>
       </body>
