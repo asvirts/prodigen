@@ -3,7 +3,7 @@ import { NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server" // Use server client
 import { stripe } from "@/lib/stripe" // Use our stripe utility
 
-export async function POST(req: Request) {
+export async function POST() {
   const cookieStore = cookies()
   const supabase = createClient(cookieStore)
 

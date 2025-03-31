@@ -2,7 +2,7 @@
 
 import React, { useState, useTransition } from "react"
 import { Button } from "@/components/ui/button"
-import { deleteTransaction, Transaction, updateTransaction } from "../actions" // Import action, Transaction type, and updateTransaction
+import { deleteTransaction, Transaction } from "../actions" // Remove updateTransaction import
 import { Loader2, MoreHorizontal } from "lucide-react"
 import { toast } from "sonner"
 import {

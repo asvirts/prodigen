@@ -1,7 +1,7 @@
 import React, { Suspense } from "react" // Import Suspense
 import { cookies } from "next/headers" // Import cookies
 import { createClient as createServerSupabaseClient } from "@/lib/supabase/server" // Import server client
-import { getTransactions, getBudgets, Budget, Transaction } from "./actions"
+import { Budget, Transaction } from "./actions"
 import {
   Table,
   TableBody,

@@ -27,12 +27,13 @@ export async function POST(req: Request) {
 
   try {
     event = stripe.webhooks.constructEvent(body, signature, webhookSecret)
-  } catch (err: any) {
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : "Unknown error"
     console.error(
-      ` Stripe webhook signature verification failed: ${err.message}`
+      ` Stripe webhook signature verification failed: ${errorMessage}`
     )
     return NextResponse.json(
-      { error: `Webhook Error: ${err.message}` },
+      { error: `Webhook Error: ${errorMessage}` },
       { status: 400 }
     )
   }
@@ -46,14 +47,6 @@ export async function POST(req: Request) {
       { status: 500 }
     )
   }
-
-  const session = event.data.object as
-    | Stripe.Checkout.Session
-    | Stripe.Subscription
-  const customerId =
-    typeof session.customer === "string"
-      ? session.customer
-      : session.customer?.id
 
   try {
     switch (event.type) {

@@ -11,7 +11,7 @@ import {
   SelectValue
 } from "@/components/ui/select"
 import { ChevronLeft, ChevronRight } from "lucide-react"
-import { format, subMonths, addMonths, getYear, getMonth } from "date-fns"
+import { subMonths, addMonths, getYear, getMonth } from "date-fns"
 
 // Helper to get current year and month from search params or defaults
 function getCurrentYearMonth(searchParams: URLSearchParams): {
@@ -61,8 +61,6 @@ export function MonthNavigator() {
     }
     return yearList
   }, [currentYear])
-
-  const currentMonthDate = new Date(year, month - 1, 1)
 
   const navigateToMonthYear = (newYear: number, newMonth: number) => {
     const params = new URLSearchParams(searchParams)

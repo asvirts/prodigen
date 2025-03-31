@@ -1,4 +1,4 @@
-import React, { Suspense } from "react"
+import React from "react"
 import { getHabits, getTodaysLoggedHabitIds } from "./actions" // Remove unused Habit import
 import {
   Card,
