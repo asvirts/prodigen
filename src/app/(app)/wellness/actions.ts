@@ -40,10 +40,10 @@ interface AddHabitData {
 
 // Type for the data coming from the edit habit form
 interface UpdateHabitData {
-    id: number;
-    name?: string;
-    description?: string;
-    goal_frequency?: string;
+  id: number
+  name?: string
+  description?: string
+  goal_frequency?: string
 }
 
 // --- Server Actions ---
@@ -160,107 +160,119 @@ export async function addWellnessLog(
 }
 
 // Server Action to get IDs of habits logged today by the current user
-export async function getTodaysLoggedHabitIds(): Promise<{ loggedHabitIds: Set<number> | null, error: string | null }> {
-    const supabase = createClient();
+export async function getTodaysLoggedHabitIds(): Promise<{
+  loggedHabitIds: Set<number> | null
+  error: string | null
+}> {
+  const supabase = createClient()
 
-    // 1. Get current user
-    const { data: userData, error: userError } = await supabase.auth.getUser();
-    if (userError || !userData?.user) {
-        console.error("Authentication Error fetching today's logs:", userError);
-        return { loggedHabitIds: null, error: 'User not authenticated.' };
-    }
-    const userId = userData.user.id;
+  // 1. Get current user
+  const { data: userData, error: userError } = await supabase.auth.getUser()
+  if (userError || !userData?.user) {
+    console.error("Authentication Error fetching today's logs:", userError)
+    return { loggedHabitIds: null, error: "User not authenticated." }
+  }
+  const userId = userData.user.id
 
-    // 2. Get today's date in YYYY-MM-DD format
-    const today = new Date().toISOString().split('T')[0];
+  // 2. Get today's date in YYYY-MM-DD format
+  const today = new Date().toISOString().split("T")[0]
 
-    // 3. Fetch logs for today and the user, selecting only habit_id
-    const { data, error } = await supabase
-        .from('p-wellness_logs')
-        .select('habit_id') // Only select the habit_id column
-        .eq('user_id', userId)
-        .eq('log_date', today);
+  // 3. Fetch logs for today and the user, selecting only habit_id
+  const { data, error } = await supabase
+    .from("p-wellness_logs")
+    .select("habit_id") // Only select the habit_id column
+    .eq("user_id", userId)
+    .eq("log_date", today)
 
-    if (error) {
-        console.error('Error fetching today's wellness logs:', error);
-        return { loggedHabitIds: null, error: 'Failed to fetch today's logs.' };
-    }
+  if (error) {
+    console.error("Error fetching today's wellness logs:", error)
+    return { loggedHabitIds: null, error: "Failed to fetch today's logs." }
+  }
 
-    // 4. Convert the result into a Set of habit IDs for quick lookup
-    const loggedHabitIds = new Set(data.map(log => log.habit_id));
+  // 4. Convert the result into a Set of habit IDs for quick lookup
+  const loggedHabitIds = new Set(data.map((log) => log.habit_id))
 
-    return { loggedHabitIds, error: null };
+  return { loggedHabitIds, error: null }
 }
 
 // Server Action to delete a habit
-export async function deleteHabit(habitId: number): Promise<{ success: boolean, error: string | null }> {
-    const supabase = createClient();
+export async function deleteHabit(
+  habitId: number
+): Promise<{ success: boolean; error: string | null }> {
+  const supabase = createClient()
 
-    // 1. Get user (RLS handles ownership check)
-    const { data: userData, error: userError } = await supabase.auth.getUser();
-    if (userError || !userData?.user) {
-        return { success: false, error: 'User not authenticated.' };
-    }
+  // 1. Get user (RLS handles ownership check)
+  const { data: userData, error: userError } = await supabase.auth.getUser()
+  if (userError || !userData?.user) {
+    return { success: false, error: "User not authenticated." }
+  }
 
-    // 2. Delete from Supabase (logs will cascade delete due to foreign key constraint)
-    const { error } = await supabase
-        .from('p-habits')
-        .delete()
-        .match({ id: habitId });
+  // 2. Delete from Supabase (logs will cascade delete due to foreign key constraint)
+  const { error } = await supabase
+    .from("p-habits")
+    .delete()
+    .match({ id: habitId })
 
-    if (error) {
-        console.error('Error deleting habit:', error);
-        return { success: false, error: 'Failed to delete habit. ' + error.message };
-    }
+  if (error) {
+    console.error("Error deleting habit:", error)
+    return { success: false, error: "Failed to delete habit. " + error.message }
+  }
 
-    // 3. Revalidate the wellness page path
-    revalidatePath('/wellness');
+  // 3. Revalidate the wellness page path
+  revalidatePath("/wellness")
 
-    return { success: true, error: null };
+  return { success: true, error: null }
 }
 
 // Server Action to update an existing habit
-export async function updateHabit(formData: UpdateHabitData): Promise<{ success: boolean, error: string | null }> {
-    const supabase = createClient();
+export async function updateHabit(
+  formData: UpdateHabitData
+): Promise<{ success: boolean; error: string | null }> {
+  const supabase = createClient()
 
-    // 1. Get user (RLS handles ownership)
-    const { data: userData, error: userError } = await supabase.auth.getUser();
-    if (userError || !userData?.user) {
-        return { success: false, error: 'User not authenticated.' };
+  // 1. Get user (RLS handles ownership)
+  const { data: userData, error: userError } = await supabase.auth.getUser()
+  if (userError || !userData?.user) {
+    return { success: false, error: "User not authenticated." }
+  }
+
+  // 2. Prepare update data
+  const { id, ...updateData } = formData
+  const dataToUpdate: Partial<Omit<Habit, "id" | "user_id" | "created_at">> = {}
+
+  if (updateData.name !== undefined) {
+    if (!updateData.name || updateData.name.length < 2) {
+      return {
+        success: false,
+        error: "Habit name must be at least 2 characters."
+      }
     }
+    dataToUpdate.name = updateData.name
+  }
+  if (updateData.description !== undefined)
+    dataToUpdate.description = updateData.description
+  if (updateData.goal_frequency !== undefined)
+    dataToUpdate.goal_frequency = updateData.goal_frequency
 
-    // 2. Prepare update data
-    const { id, ...updateData } = formData; 
-    const dataToUpdate: Partial<Omit<Habit, 'id' | 'user_id' | 'created_at'>> = {};
+  if (Object.keys(dataToUpdate).length === 0) {
+    return { success: false, error: "No fields provided for update." }
+  }
 
-    if (updateData.name !== undefined) {
-        if (!updateData.name || updateData.name.length < 2) {
-             return { success: false, error: 'Habit name must be at least 2 characters.' };
-        }
-        dataToUpdate.name = updateData.name;
-    }
-    if (updateData.description !== undefined) dataToUpdate.description = updateData.description;
-    if (updateData.goal_frequency !== undefined) dataToUpdate.goal_frequency = updateData.goal_frequency;
+  // 3. Update in Supabase
+  const { error } = await supabase
+    .from("p-habits")
+    .update(dataToUpdate)
+    .match({ id: id })
 
-    if (Object.keys(dataToUpdate).length === 0) {
-        return { success: false, error: 'No fields provided for update.' };
-    }
+  if (error) {
+    console.error("Error updating habit:", error)
+    return { success: false, error: "Failed to update habit. " + error.message }
+  }
 
-    // 3. Update in Supabase
-    const { error } = await supabase
-        .from('p-habits')
-        .update(dataToUpdate)
-        .match({ id: id });
+  // 4. Revalidate the wellness page path
+  revalidatePath("/wellness")
 
-    if (error) {
-        console.error('Error updating habit:', error);
-        return { success: false, error: 'Failed to update habit. ' + error.message };
-    }
-
-    // 4. Revalidate the wellness page path
-    revalidatePath('/wellness');
-
-    return { success: true, error: null };
+  return { success: true, error: null }
 }
 
 // TODO: Implement more generic getWellnessLogs action (e.g., for calendar view)
