@@ -17,6 +17,7 @@ import { useRouter } from "next/navigation"
 import { ThemeToggle } from "@/components/theme-toggle" // Import ThemeToggle
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet" // Import Sheet
 import { Menu } from "lucide-react" // Import Menu icon
+import { SubscribeButton } from "@/components/subscribe-button" // Import SubscribeButton
 
 interface HeaderProps {
   user: User
@@ -157,10 +158,16 @@ export default function Header({ user }: HeaderProps) {
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
+              {/* Add Subscribe Button Here (or link to billing page) */}
+              {/* Note: This button calls client-side JS, so needs to be rendered in client context */}
+              {/* It works here because Header is already a client component */}
+              <div className="p-2">
+                <SubscribeButton />
+              </div>
+              <DropdownMenuSeparator />
               {/* Add links to Profile, Settings etc. later */}
               {/* <DropdownMenuItem>Profile</DropdownMenuItem> */}
               {/* <DropdownMenuItem>Settings</DropdownMenuItem> */}
-              <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleSignOut}>
                 Log out
               </DropdownMenuItem>
