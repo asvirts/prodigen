@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
+# NOTE: This format will be deprecated in husky v10.0.0
 . "$(dirname -- "$0")/_/husky.sh"
 
 npx lint-staged
