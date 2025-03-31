@@ -2,10 +2,57 @@
 
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 
+// Create a mock query builder that handles all the chaining methods
+const createMockQueryBuilder = () => {
+  const mockData = { data: [], error: null };
+
+  // Create a function that returns an object with all query methods
+  const createChainableMethods = () => ({
+    ...mockData,
+    select: () => createChainableMethods(),
+    order: () => createChainableMethods(),
+    eq: () => createChainableMethods(),
+    gte: () => createChainableMethods(),
+    lte: () => createChainableMethods(),
+    insert: () => ({ error: null }),
+    update: () => ({ error: null }),
+    delete: () => ({ error: null }),
+  });
+
+  return createChainableMethods();
+};
+
 // Create a client-side Supabase client
 export const createClient = () => {
+  // During SSR, return a mock client to avoid errors
   if (typeof window === "undefined") {
-    throw new Error("Client-side Supabase client must be used in the browser");
+    return {
+      auth: {
+        getUser: () => Promise.resolve({ data: { user: null }, error: null }),
+        signOut: () => Promise.resolve({ error: null }),
+        signInWithPassword: () =>
+          Promise.resolve({
+            data: {
+              user: { id: "mock-user-id", email: "mock@example.com" },
+              session: { access_token: "mock-token" },
+            },
+            error: null,
+          }),
+        signUp: () =>
+          Promise.resolve({
+            data: {
+              user: {
+                id: "mock-user-id",
+                email: "mock@example.com",
+                identities: [],
+              },
+              session: { access_token: "mock-token" },
+            },
+            error: null,
+          }),
+      },
+      from: () => createMockQueryBuilder(),
+    };
   }
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -18,30 +65,29 @@ export const createClient = () => {
       return {
         auth: {
           getUser: () => Promise.resolve({ data: { user: null }, error: null }),
+          signOut: () => Promise.resolve({ error: null }),
+          signInWithPassword: () =>
+            Promise.resolve({
+              data: {
+                user: { id: "mock-user-id", email: "mock@example.com" },
+                session: { access_token: "mock-token" },
+              },
+              error: null,
+            }),
+          signUp: () =>
+            Promise.resolve({
+              data: {
+                user: {
+                  id: "mock-user-id",
+                  email: "mock@example.com",
+                  identities: [],
+                },
+                session: { access_token: "mock-token" },
+              },
+              error: null,
+            }),
         },
-        from: () => ({
-          select: () => ({
-            order: () => ({
-              data: [],
-              error: null,
-            }),
-            eq: () => ({
-              data: [],
-              error: null,
-            }),
-            gte: () => ({
-              lte: () => ({
-                order: () => ({
-                  data: [],
-                  error: null,
-                }),
-              }),
-            }),
-          }),
-          insert: () => ({ error: null }),
-          update: () => ({ error: null }),
-          delete: () => ({ error: null }),
-        }),
+        from: () => createMockQueryBuilder(),
       };
     }
 

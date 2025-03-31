@@ -20,7 +20,6 @@ import { Menu } from "lucide-react"; // Import Menu icon
 import { SubscribeButton } from "@/components/subscribe-button"; // Import SubscribeButton
 import { ManageSubscriptionButton } from "@/components/manage-subscription-button"; // Import Manage Button
 import { Badge } from "@/components/ui/badge"; // Import Badge
-import type { SupabaseClient } from "@supabase/supabase-js"; // Import SupabaseClient type
 
 // Define Profile type matching the layout
 type UserProfile = {
@@ -36,8 +35,8 @@ interface HeaderProps {
 export default function Header({ user, profile }: HeaderProps) {
   // Destructure profile
   const router = useRouter();
-  // Explicitly type the supabase client
-  const supabase: SupabaseClient = createClient();
+  // Use the return type of createClient() without explicit typing
+  const supabase = createClient();
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();

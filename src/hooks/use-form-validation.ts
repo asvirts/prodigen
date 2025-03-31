@@ -22,7 +22,7 @@ export function useFormValidation<T extends object>(
   >({});
 
   // Optional SWR for persisted form data
-  const { data: savedFormData, mutate: setSavedFormData } = useSWR<T>(
+  const { data: savedFormData, mutate: setSavedFormData } = useSWR<T | null>(
     "form-validation",
     null,
     {

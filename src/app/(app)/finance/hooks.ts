@@ -43,7 +43,7 @@ export function useTransactions(year: number, month: number) {
         throw new Error(`Failed to fetch transactions: ${error.message}`);
       }
 
-      return data.map((tx) => ({
+      return data.map((tx: DatabaseTransaction) => ({
         ...tx,
         amount: Number(tx.amount),
       })) as Transaction[];
@@ -68,7 +68,7 @@ export function useBudgets(year: number, month: number) {
         throw new Error(`Failed to fetch budgets: ${error.message}`);
       }
 
-      return data.map((b) => ({
+      return data.map((b: DatabaseBudget) => ({
         ...b,
         amount: Number(b.amount),
       })) as Budget[];
@@ -295,3 +295,24 @@ export function useSetBudget() {
     },
   });
 }
+
+type DatabaseTransaction = {
+  id: number;
+  amount: string | number;
+  date: string;
+  description: string;
+  category: string;
+  type: "income" | "expense";
+  user_id: string;
+  created_at: string;
+};
+
+type DatabaseBudget = {
+  id: number;
+  amount: string | number;
+  year: number;
+  month: number;
+  category: string;
+  user_id: string;
+  created_at: string;
+};
