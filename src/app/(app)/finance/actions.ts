@@ -17,7 +17,7 @@ export type Transaction = {
 }
 
 // Type for Budget data
-interface Budget {
+export interface Budget {
   id: number
   user_id: string
   year: number
@@ -63,7 +63,7 @@ export async function getTransactions(filter?: {
   transactions: Transaction[] | null
   error: string | null
 }> {
-  const cookieStore = cookies()
+  const cookieStore = await cookies()
   const supabase = createServerSupabaseClient(cookieStore)
   const { data: userData, error: userError } = await supabase.auth.getUser()
 
@@ -116,7 +116,7 @@ export async function getTransactions(filter?: {
 export async function addTransaction(
   formData: AddTransactionData
 ): Promise<{ success: boolean; error: string | null }> {
-  const cookieStore = cookies()
+  const cookieStore = await cookies()
   const supabase = createServerSupabaseClient(cookieStore)
 
   // 1. Get current user
@@ -166,7 +166,7 @@ export async function addTransaction(
 export async function deleteTransaction(
   transactionId: number
 ): Promise<{ success: boolean; error: string | null }> {
-  const cookieStore = cookies()
+  const cookieStore = await cookies()
   const supabase = createServerSupabaseClient(cookieStore)
 
   // 1. Get user (RLS handles ownership check)
@@ -199,7 +199,7 @@ export async function deleteTransaction(
 export async function updateTransaction(
   formData: UpdateTransactionData
 ): Promise<{ success: boolean; error: string | null }> {
-  const cookieStore = cookies()
+  const cookieStore = await cookies()
   const supabase = createServerSupabaseClient(cookieStore)
 
   // 1. Get user (RLS handles ownership)
@@ -266,7 +266,7 @@ export async function getBudgets(filter: {
   year: number
   month: number
 }): Promise<{ budgets: Budget[] | null; error: string | null }> {
-  const cookieStore = cookies()
+  const cookieStore = await cookies()
   const supabase = createServerSupabaseClient(cookieStore)
   const { data: userData, error: userError } = await supabase.auth.getUser()
 
@@ -294,7 +294,7 @@ export async function getBudgets(filter: {
 export async function setBudget(
   budgetData: SetBudgetData
 ): Promise<{ success: boolean; error: string | null }> {
-  const cookieStore = cookies()
+  const cookieStore = await cookies()
   const supabase = createServerSupabaseClient(cookieStore)
   const { data: userData, error: userError } = await supabase.auth.getUser()
 

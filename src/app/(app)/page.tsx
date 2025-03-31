@@ -4,7 +4,7 @@ import { createClient as createServerSupabaseClient } from "@/lib/supabase/serve
 import { Button } from "@/components/ui/button"
 
 export default async function Home() {
-  const cookieStore = cookies() // Get cookie store
+  const cookieStore = await cookies() // Get cookie store
   const supabase = createServerSupabaseClient(cookieStore) // Pass cookie store
 
   const { data, error } = await supabase.auth.getUser()
@@ -16,7 +16,7 @@ export default async function Home() {
   const signOut = async () => {
     "use server"
 
-    const cookieStore = cookies() // Get cookie store within action
+    const cookieStore = await cookies() // Get cookie store within action
     const supabase = createServerSupabaseClient(cookieStore) // Pass cookie store
     await supabase.auth.signOut()
     return redirect("/auth") // Redirect to login after sign out

@@ -4,7 +4,15 @@ import { createClient } from "@/lib/supabase/server"
 import { stripe } from "@/lib/stripe"
 
 export async function POST() {
-  const cookieStore = cookies()
+  // In development, just return a mock response if env vars are missing
+  if (process.env.NODE_ENV !== "production" && !process.env.STRIPE_SECRET_KEY) {
+    return NextResponse.json({
+      url: "http://localhost:3000/account",
+      environment: "development"
+    })
+  }
+
+  const cookieStore = await cookies()
   const supabase = createClient(cookieStore)
 
   try {

@@ -26,8 +26,8 @@ export type WellnessLog = {
 }
 
 // Helper function to create client within actions
-function createClient() {
-  const cookieStore = cookies()
+async function createClient() {
+  const cookieStore = await cookies()
   return createServerSupabaseClient(cookieStore)
 }
 
@@ -53,7 +53,7 @@ export async function getHabits(): Promise<{
   habits: Habit[] | null
   error: string | null
 }> {
-  const supabase = createClient()
+  const supabase = await createClient()
   const { data: userData, error: userError } = await supabase.auth.getUser()
 
   if (userError || !userData?.user) {
@@ -77,7 +77,7 @@ export async function getHabits(): Promise<{
 export async function addHabit(
   formData: AddHabitData
 ): Promise<{ success: boolean; error: string | null }> {
-  const supabase = createClient()
+  const supabase = await createClient()
 
   // 1. Get current user
   const { data: userData, error: userError } = await supabase.auth.getUser()
@@ -117,7 +117,7 @@ export async function addHabit(
 export async function addWellnessLog(
   habitId: number
 ): Promise<{ success: boolean; error: string | null }> {
-  const supabase = createClient()
+  const supabase = await createClient()
 
   // 1. Get current user
   const { data: userData, error: userError } = await supabase.auth.getUser()
@@ -164,7 +164,7 @@ export async function getTodaysLoggedHabitIds(): Promise<{
   loggedHabitIds: Set<number> | null
   error: string | null
 }> {
-  const supabase = createClient()
+  const supabase = await createClient()
 
   // 1. Get current user
   const { data: userData, error: userError } = await supabase.auth.getUser()
@@ -199,7 +199,7 @@ export async function getTodaysLoggedHabitIds(): Promise<{
 export async function deleteHabit(
   habitId: number
 ): Promise<{ success: boolean; error: string | null }> {
-  const supabase = createClient()
+  const supabase = await createClient()
 
   // 1. Get user (RLS handles ownership check)
   const { data: userData, error: userError } = await supabase.auth.getUser()
@@ -228,7 +228,7 @@ export async function deleteHabit(
 export async function updateHabit(
   formData: UpdateHabitData
 ): Promise<{ success: boolean; error: string | null }> {
-  const supabase = createClient()
+  const supabase = await createClient()
 
   // 1. Get user (RLS handles ownership)
   const { data: userData, error: userError } = await supabase.auth.getUser()

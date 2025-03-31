@@ -46,7 +46,7 @@ export function LogHabitButton({
   // Button State Logic
   const buttonVariant = isLocallyLogged
     ? showSuccess
-      ? "success"
+      ? "secondary"
       : "secondary"
     : "default"
   // Use const for isDisabled as it's not reassigned

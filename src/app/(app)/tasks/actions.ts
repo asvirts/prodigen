@@ -10,14 +10,14 @@ export type Task = {
   user_id: string
   title: string
   description?: string | null
-  status: string // 'todo', 'in_progress', 'done'
+  status: "todo" | "in_progress" | "done" // Specific enum values
   due_date?: string | null // ISO 8601 date string (YYYY-MM-DD)
   created_at: string // ISO 8601 timestamp string
 }
 
 // Helper function to create client within actions
-function createClient() {
-  const cookieStore = cookies()
+async function createClient() {
+  const cookieStore = await cookies()
   return createServerSupabaseClient(cookieStore)
 }
 
@@ -33,7 +33,7 @@ interface UpdateTaskData {
   id: number
   title?: string
   description?: string
-  status?: string
+  status?: "todo" | "in_progress" | "done"
   due_date?: string | null
 }
 
@@ -44,7 +44,7 @@ export async function getTasks(): Promise<{
   tasks: Task[] | null
   error: string | null
 }> {
-  const supabase = createClient()
+  const supabase = await createClient()
   const { data: userData, error: userError } = await supabase.auth.getUser()
 
   if (userError || !userData?.user) {
@@ -68,7 +68,7 @@ export async function getTasks(): Promise<{
 export async function addTask(
   formData: AddTaskData
 ): Promise<{ success: boolean; error: string | null }> {
-  const supabase = createClient()
+  const supabase = await createClient()
 
   // 1. Get current user
   const { data: userData, error: userError } = await supabase.auth.getUser()
@@ -105,7 +105,7 @@ export async function addTask(
 export async function deleteTask(
   taskId: number
 ): Promise<{ success: boolean; error: string | null }> {
-  const supabase = createClient()
+  const supabase = await createClient()
 
   // 1. Get current user (ensure they own the task implicitly via RLS)
   const { data: userData, error: userError } = await supabase.auth.getUser()
@@ -137,7 +137,7 @@ export async function deleteTask(
 export async function updateTask(
   formData: UpdateTaskData
 ): Promise<{ success: boolean; error: string | null }> {
-  const supabase = createClient()
+  const supabase = await createClient()
 
   // 1. Get current user (RLS handles ownership check)
   const { data: userData, error: userError } = await supabase.auth.getUser()

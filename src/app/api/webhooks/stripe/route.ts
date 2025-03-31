@@ -11,8 +11,14 @@ import { createClient } from "@/lib/supabase/admin" // We need admin client to u
 // export const createClient = () => createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
 
 export async function POST(req: Request) {
+  // In development, just return a success response if env vars are missing
+  if (process.env.NODE_ENV !== "production" && !process.env.STRIPE_SECRET_KEY) {
+    return NextResponse.json({ received: true, environment: "development" })
+  }
+
   const body = await req.text() // Need raw body for verification
-  const signature = headers().get("Stripe-Signature") as string
+  const headersList = await headers()
+  const signature = headersList.get("Stripe-Signature") as string
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET
 
   if (!webhookSecret) {

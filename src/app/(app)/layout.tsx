@@ -15,7 +15,7 @@ export default async function AppLayout({
 }: {
   children: React.ReactNode
 }) {
-  const cookieStore = cookies()
+  const cookieStore = await cookies()
   const supabase = createServerSupabaseClient(cookieStore)
 
   // 1. Get Auth User

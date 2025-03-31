@@ -38,22 +38,17 @@ function formatCurrency(amount: number) {
   }).format(amount)
 }
 
-// Define Page Props to receive searchParams
-interface FinancePageProps {
-  searchParams?: {
-    year?: string
-    month?: string
-    [key: string]: string | string[] | undefined
-  }
-}
-
+// Using the built-in type system for Next.js Pages
 export default async function FinancePage({
-  searchParams = {}
-}: FinancePageProps) {
+  searchParams
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}) {
   // Convert searchParams to plain object with defaults
+  const parsedParams = await searchParams
   const params = {
-    year: searchParams?.year?.[0] || searchParams?.year || "",
-    month: searchParams?.month?.[0] || searchParams?.month || ""
+    year: typeof parsedParams.year === "string" ? parsedParams.year : "",
+    month: typeof parsedParams.month === "string" ? parsedParams.month : ""
   }
 
   const now = new Date()
@@ -62,7 +57,7 @@ export default async function FinancePage({
   const currentFilter = { year, month }
 
   // --- Client Initialization (Correct for Page Render) ---
-  const cookieStore = cookies()
+  const cookieStore = await cookies()
   if (!cookieStore) {
     throw new Error("Cookie store not available")
   }

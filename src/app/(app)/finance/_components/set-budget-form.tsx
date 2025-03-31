@@ -76,7 +76,10 @@ export function SetBudgetForm({
     items.sort((a, b) => {
       if (a.category === null) return -1
       if (b.category === null) return 1
-      return a.category.localeCompare(b.category)
+      // Both categories are strings at this point, but TypeScript doesn't know
+      const aCategory = a.category as string
+      const bCategory = b.category as string
+      return aCategory.localeCompare(bCategory)
     })
 
     return items
@@ -159,6 +162,7 @@ export function SetBudgetForm({
                           <Input
                             placeholder="Category Name"
                             {...catField}
+                            value={catField.value ?? ""}
                             // Optionally disable if it was a detected category?
                             // disabled={initialBudgetItems[index]?.category !== null && initialBudgetItems[index]?.category !== ""}
                           />
