@@ -1,5 +1,5 @@
-import React from "react"
-import { getHabits, Habit, getTodaysLoggedHabitIds } from "./actions" // Import action and type
+import React, { Suspense } from "react"
+import { getHabits, getTodaysLoggedHabitIds } from "./actions" // Remove unused Habit import
 import {
   Card,
   CardContent,

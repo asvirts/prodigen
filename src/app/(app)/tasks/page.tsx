@@ -1,5 +1,7 @@
 import React from "react"
-import { getTasks, Task } from "./actions" // Import the action and type
+import { getTasks } from "./actions"
+// import TaskCard from "./_components/task-card"
+import { AddTaskForm } from "./_components/add-task-form"
 import {
   Card,
   CardContent,
@@ -7,7 +9,6 @@ import {
   CardHeader,
   CardTitle
 } from "@/components/ui/card"
-import { AddTaskForm } from "./_components/add-task-form" // Import the form
 import { TaskCardActions } from "./_components/task-card-actions" // Import the new component
 
 // Make the component async to fetch data on the server
@@ -16,13 +17,8 @@ export default async function TasksPage() {
   const { tasks, error } = await getTasks()
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-semibold">Task & Time Manager</h1>
-        {/* TODO: Move form to a Dialog/Sheet later */}
-      </div>
-
-      {/* Add the form component here */}
+    <div className="space-y-6">
+      <h1 className="text-2xl font-semibold">Task Manager</h1>
       <AddTaskForm />
 
       <h2 className="text-xl font-semibold mt-6 mb-4 border-t pt-6">

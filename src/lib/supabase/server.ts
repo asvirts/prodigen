@@ -7,27 +7,25 @@ export function createClient(cookieStore: ReadonlyRequestCookies) {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        get(name: string) {
-          return cookieStore.get(name)?.value
+        async get(name: string) {
+          if (!cookieStore) return undefined
+          const cookie = await cookieStore.get(name)
+          return cookie?.value
         },
-        set(name: string, value: string, options: CookieOptions) {
+        async set(name: string, value: string, options: CookieOptions) {
           try {
-            cookieStore.set({ name, value, ...options })
+            if (!cookieStore) return
+            await cookieStore.set({ name, value, ...options })
           } catch (error) {
-            console.warn(
-              `Failed to set cookie '${name}' in Supabase server client:`,
-              error
-            )
+            console.warn(`Failed to set cookie '${name}':`, error)
           }
         },
-        remove(name: string, options: CookieOptions) {
+        async remove(name: string, options: CookieOptions) {
           try {
-            cookieStore.set({ name, value: "", ...options })
+            if (!cookieStore) return
+            await cookieStore.set({ name, value: "", ...options })
           } catch (error) {
-            console.warn(
-              `Failed to remove cookie '${name}' in Supabase server client:`,
-              error
-            )
+            console.warn(`Failed to remove cookie '${name}':`, error)
           }
         }
       }

@@ -7,13 +7,10 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
-  DialogClose,
-  DialogFooter
+  DialogTrigger
 } from "@/components/ui/dialog"
-import { deleteTask, Task, updateTask } from "../actions"
+import { deleteTask, Task } from "../actions"
 import { EditTaskForm } from "./edit-task-form"
-import { Loader2 } from "lucide-react"
 import { toast } from "sonner"
 
 interface TaskCardActionsProps {

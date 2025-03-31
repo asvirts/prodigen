@@ -44,40 +44,22 @@ export function LogHabitButton({
     })
   }
 
-  // Determine button content and appearance
-  let buttonContent: React.ReactNode
-  let buttonVariant:
-    | "default"
-    | "outline"
-    | "secondary"
-    | "ghost"
-    | "link"
-    | "destructive"
-    | null
-    | undefined = "outline"
-  let isDisabled = isPending || isLocallyLogged
+  // Button State Logic
+  const buttonVariant = isLocallyLogged
+    ? showSuccess
+      ? "success"
+      : "secondary"
+    : "default"
+  // Use const for isDisabled as it's not reassigned
+  const isDisabled = isPending || isLocallyLogged
 
+  let buttonContent = isLocallyLogged
+    ? showSuccess
+      ? "Logged!"
+      : "Logged Today"
+    : habitName
   if (isPending) {
-    buttonContent = <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-    buttonVariant = "secondary"
-  } else if (isLocallyLogged) {
-    buttonContent = (
-      <>
-        <Check className="mr-2 h-4 w-4" /> Logged
-      </>
-    )
-    buttonVariant = "default" // Use default filled variant when logged
-  } else {
-    buttonContent = "Log Today"
-    buttonVariant = "outline"
-  }
-  // Keep success state separate for temporary visual feedback
-  if (showSuccess && isLocallyLogged) {
-    buttonContent = (
-      <>
-        <Check className="mr-2 h-4 w-4" /> Logged!
-      </>
-    )
+    buttonContent = "Logging..."
   }
 
   return (

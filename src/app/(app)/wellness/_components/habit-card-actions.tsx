@@ -9,7 +9,7 @@ import {
   DialogTitle,
   DialogTrigger
 } from "@/components/ui/dialog"
-import { deleteHabit, Habit, updateHabit } from "../actions" // Import delete action, Habit type, and update action
+import { deleteHabit, Habit } from "../actions" // Remove unused updateHabit
 import { Loader2 } from "lucide-react"
 import { EditHabitForm } from "./edit-habit-form" // Import edit form
 import { toast } from "sonner" // Import toast

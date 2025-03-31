@@ -30,20 +30,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      {" "}
-      {/* Add suppressHydrationWarning for potential themeing later */}
-      <body
-        // className={`${geistSans.variable} ${geistMono.variable} antialiased`} // Update className
-        className={`${inter.variable} font-sans antialiased`} // Use Inter font variable
-      >
+      <body className={`${inter.variable} font-sans antialiased`}>
         <ThemeProvider
-          attribute="class" // Use class-based theme switching
-          defaultTheme="system" // Default to system preference
-          enableSystem // Enable system preference detection
-          disableTransitionOnChange // Prevent transitions on theme change
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
         >
           {children}
-          <Toaster richColors position="top-right" /> {/* Add Toaster here */}
+          <Toaster richColors position="top-right" />
         </ThemeProvider>
       </body>
     </html>
