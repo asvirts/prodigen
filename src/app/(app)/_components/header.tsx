@@ -1,56 +1,58 @@
-"use client" // DropdownMenu requires client-side interactivity
+"use client"; // DropdownMenu requires client-side interactivity
 
-import Link from "next/link"
-import { User } from "@supabase/supabase-js"
-import { Button } from "@/components/ui/button"
+import Link from "next/link";
+import { User } from "@supabase/supabase-js";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuTrigger
-} from "@/components/ui/dropdown-menu"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { createClient } from "@/lib/supabase/client" // Use client client for actions triggered by user
-import { useRouter } from "next/navigation"
-import { ThemeToggle } from "@/components/theme-toggle" // Import ThemeToggle
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet" // Import Sheet
-import { Menu } from "lucide-react" // Import Menu icon
-import { SubscribeButton } from "@/components/subscribe-button" // Import SubscribeButton
-import { ManageSubscriptionButton } from "@/components/manage-subscription-button" // Import Manage Button
-import { Badge } from "@/components/ui/badge" // Import Badge
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { createClient } from "@/lib/supabase/client"; // Use client client for actions triggered by user
+import { useRouter } from "next/navigation";
+import { ThemeToggle } from "@/components/theme-toggle"; // Import ThemeToggle
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"; // Import Sheet
+import { Menu } from "lucide-react"; // Import Menu icon
+import { SubscribeButton } from "@/components/subscribe-button"; // Import SubscribeButton
+import { ManageSubscriptionButton } from "@/components/manage-subscription-button"; // Import Manage Button
+import { Badge } from "@/components/ui/badge"; // Import Badge
+import type { SupabaseClient } from "@supabase/supabase-js"; // Import SupabaseClient type
 
 // Define Profile type matching the layout
 type UserProfile = {
-  id: string
-  subscription_plan?: string | null
-}
+  id: string;
+  subscription_plan?: string | null;
+};
 
 interface HeaderProps {
-  user: User
-  profile: UserProfile | null // Add profile prop
+  user: User;
+  profile: UserProfile | null; // Add profile prop
 }
 
 export default function Header({ user, profile }: HeaderProps) {
   // Destructure profile
-  const router = useRouter()
-  const supabase = createClient()
+  const router = useRouter();
+  // Explicitly type the supabase client
+  const supabase: SupabaseClient = createClient();
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut()
-    router.push("/auth") // Redirect client-side after sign out
-    router.refresh() // Ensure layout re-renders and checks auth state
-  }
+    await supabase.auth.signOut();
+    router.push("/auth"); // Redirect client-side after sign out
+    router.refresh(); // Ensure layout re-renders and checks auth state
+  };
 
   const getInitials = (email: string | undefined): string => {
-    if (!email) return "U"
-    return email.substring(0, 2).toUpperCase()
-  }
+    if (!email) return "U";
+    return email.substring(0, 2).toUpperCase();
+  };
 
   // Explicitly check profile exists before accessing plan
-  const plan = profile ? profile.subscription_plan : null
-  const isProUser = plan === "pro"
+  const plan = profile ? profile.subscription_plan : null;
+  const isProUser = plan === "pro";
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -194,5 +196,5 @@ export default function Header({ user, profile }: HeaderProps) {
         </div>
       </div>
     </header>
-  )
+  );
 }
