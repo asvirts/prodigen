@@ -201,7 +201,7 @@ export function AddTransactionForm({ onSuccess }: { onSuccess?: () => void }) {
                       )}
                     >
                       {field.value ? (
-                        format(field.value, "PPP") // More readable format
+                        format(field.value, "PPP")
                       ) : (
                         <span>Pick a date</span>
                       )}
@@ -212,7 +212,11 @@ export function AddTransactionForm({ onSuccess }: { onSuccess?: () => void }) {
                     <Calendar
                       mode="single"
                       selected={field.value}
-                      onSelect={field.onChange}
+                      onSelect={(date) => {
+                        if (date) {
+                          field.onChange(date);
+                        }
+                      }}
                       disabled={(date) =>
                         date > new Date() || date < new Date("1900-01-01")
                       }
