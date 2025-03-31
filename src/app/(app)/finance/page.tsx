@@ -9,7 +9,7 @@ import {
   TableCell,
   TableHead,
   TableHeader,
-  TableRow
+  TableRow,
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge" // For income/expense type
 import { AddTransactionDialog } from "./_components/add-transaction-dialog" // Import the Dialog component
@@ -24,7 +24,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger
+  DialogTrigger,
 } from "@/components/ui/dialog" // Import Dialog
 import { Button } from "@/components/ui/button"
 
@@ -34,13 +34,13 @@ export const dynamic = "force-dynamic" // Force dynamic rendering
 function formatCurrency(amount: number) {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
-    currency: "USD"
+    currency: "USD",
   }).format(amount)
 }
 
 // Using the built-in type system for Next.js Pages
 export default async function FinancePage({
-  searchParams
+  searchParams,
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
@@ -48,7 +48,7 @@ export default async function FinancePage({
   const parsedParams = await searchParams
   const params = {
     year: typeof parsedParams.year === "string" ? parsedParams.year : "",
-    month: typeof parsedParams.month === "string" ? parsedParams.month : ""
+    month: typeof parsedParams.month === "string" ? parsedParams.month : "",
   }
 
   const now = new Date()
@@ -65,7 +65,7 @@ export default async function FinancePage({
   const supabase = createServerSupabaseClient(cookieStore)
   const {
     data: { user },
-    error: authError
+    error: authError,
   } = await supabase.auth.getUser()
   if (authError || !user) {
     // Handle auth error appropriately, maybe redirect
@@ -92,11 +92,11 @@ export default async function FinancePage({
     if (error)
       return {
         data: null,
-        error: `Failed to fetch transactions: ${error.message}`
+        error: `Failed to fetch transactions: ${error.message}`,
       }
     const transactions = data.map((tx) => ({
       ...tx,
-      amount: Number(tx.amount)
+      amount: Number(tx.amount),
     })) as Transaction[]
     return { data: transactions, error: null }
   }
@@ -111,7 +111,7 @@ export default async function FinancePage({
       return { data: null, error: `Failed to fetch budgets: ${error.message}` }
     const budgets = data.map((b) => ({
       ...b,
-      amount: Number(b.amount)
+      amount: Number(b.amount),
     })) as Budget[]
     return { data: budgets, error: null }
   }
@@ -119,7 +119,7 @@ export default async function FinancePage({
   // Fetch concurrently
   const [transactionsResult, budgetsResult] = await Promise.all([
     fetchTransactions(),
-    fetchBudgets()
+    fetchBudgets(),
   ])
 
   const { data: transactions, error: transactionError } = transactionsResult
@@ -178,7 +178,7 @@ export default async function FinancePage({
       budget: overallBudget.amount,
       actual,
       remaining,
-      percentUsed
+      percentUsed,
     })
   }
 
@@ -192,7 +192,7 @@ export default async function FinancePage({
       budget: budget.amount,
       actual,
       remaining,
-      percentUsed
+      percentUsed,
     })
   }
 
@@ -204,7 +204,7 @@ export default async function FinancePage({
         budget: 0,
         actual: expensesByCategory[category],
         remaining: -expensesByCategory[category],
-        percentUsed: 0
+        percentUsed: 0,
       })
     }
   }
@@ -243,7 +243,7 @@ export default async function FinancePage({
               />
             </DialogContent>
           </Dialog>
-          <AddTransactionDialog />
+          <AddTransactionDialog existingCategories={detectedCategories} />
         </div>
       </div>
 

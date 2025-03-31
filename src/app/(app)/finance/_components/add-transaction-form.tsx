@@ -63,7 +63,12 @@ const transactionFormSchema = z.object({
     .transform((val) => (val === "" ? undefined : val)), // Transform empty string to undefined
 });
 
-export function AddTransactionForm({ onSuccess }: { onSuccess?: () => void }) {
+interface AddTransactionFormProps {
+  onSuccess?: () => void
+  existingCategories: string[]
+}
+
+export function AddTransactionForm({ onSuccess, existingCategories }: AddTransactionFormProps) {
   const [error, setError] = useState<string | null>(null);
 
   // Use our custom React Query mutation hook
@@ -193,11 +198,12 @@ export function AddTransactionForm({ onSuccess }: { onSuccess?: () => void }) {
                 <FormLabel>Date</FormLabel>
                 <Popover>
                   <PopoverTrigger asChild>
-                    <Button
-                      variant={"outline"}
-                      className={cn(
-                        "pl-3 text-left font-normal",
-                        !field.value && "text-muted-foreground",
+                    <FormControl>
+                      <Button
+                        variant={"outline"}
+                        className={cn(
+                          "w-[240px] pl-3 text-left font-normal",
+                          !field.value && "text-muted-foreground",
                       )}
                     >
                       {field.value ? (
@@ -233,15 +239,34 @@ export function AddTransactionForm({ onSuccess }: { onSuccess?: () => void }) {
             name="category"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Category (Optional)</FormLabel>
-                <FormControl>
-                  {/* TODO: Replace with Select dropdown populated from p-budgets later? */}
-                  <Input
-                    placeholder="e.g., Food, Transport"
-                    {...field}
-                    value={field.value ?? ""}
-                  />
-                </FormControl>
+                <FormLabel>Category</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  value={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select or create a category" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {existingCategories.map((category) => (
+                      <SelectItem key={category} value={category}>
+                        {category}
+                      </SelectItem>
+                    ))}
+                    <SelectItem value="new">+ Create New Category</SelectItem>
+                  </SelectContent>
+                </Select>
+                {field.value === "new" && (
+                  <FormControl>
+                    <Input
+                      placeholder="Enter new category name"
+                      onChange={(e) => field.onChange(e.target.value)}
+                      className="mt-2"
+                    />
+                  </FormControl>
+                )}
                 <FormMessage />
               </FormItem>
             )}
