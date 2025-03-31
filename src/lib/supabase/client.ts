@@ -79,7 +79,7 @@ const createMockClient = () => ({
 import { devConfig } from "./dev-config"
 
 // Create a client-side Supabase client
-export const createClient = async () => {
+export const createClient = () => {
   // During SSR, return a mock client to avoid errors
   if (typeof window === "undefined") {
     return createMockClient()
