@@ -127,7 +127,7 @@ export default function AuthPage() {
             {error && <p className="text-red-500 text-sm">{error}</p>}
             {message && <p className="text-green-500 text-sm">{message}</p>}
           </CardContent>
-          <CardFooter className="flex flex-col gap-4">
+          <CardFooter className="flex flex-col gap-4 mt-4">
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? "Processing..." : "Sign in"}
             </Button>
