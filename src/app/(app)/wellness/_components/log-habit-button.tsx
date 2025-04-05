@@ -3,7 +3,10 @@
 import React, { useState, useTransition, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { addWellnessLog } from "../actions" // Import the action
+<<<<<<< HEAD
 import { Loader2 } from "lucide-react" // For loading spinner and Check icon
+=======
+>>>>>>> e3a6ed6b7d02761e24a0c75f325f6e1225bbe1e6
 import { toast } from "sonner" // Import toast
 
 interface LogHabitButtonProps {
@@ -47,7 +50,7 @@ export function LogHabitButton({
   // Button State Logic
   const buttonVariant = isLocallyLogged
     ? showSuccess
-      ? "success"
+      ? "secondary"
       : "secondary"
     : "default"
   // Use const for isDisabled as it's not reassigned

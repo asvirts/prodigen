@@ -1,9 +1,14 @@
 "use client"
 
+<<<<<<< HEAD
 import React, { useTransition } from "react"
+=======
+import React, { useTransition, useMemo } from "react"
+>>>>>>> e3a6ed6b7d02761e24a0c75f325f6e1225bbe1e6
 import { useForm, useFieldArray } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
+import { format } from "date-fns"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -75,7 +80,10 @@ export function SetBudgetForm({
     items.sort((a, b) => {
       if (a.category === null) return -1
       if (b.category === null) return 1
-      return a.category.localeCompare(b.category)
+      // Both categories are strings at this point, but TypeScript doesn't know
+      const aCategory = a.category as string
+      const bCategory = b.category as string
+      return aCategory.localeCompare(bCategory)
     })
 
     return items
@@ -158,6 +166,7 @@ export function SetBudgetForm({
                           <Input
                             placeholder="Category Name"
                             {...catField}
+                            value={catField.value ?? ""}
                             // Optionally disable if it was a detected category?
                             // disabled={initialBudgetItems[index]?.category !== null && initialBudgetItems[index]?.category !== ""}
                           />

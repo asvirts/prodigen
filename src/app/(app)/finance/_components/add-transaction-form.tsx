@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useTransition } from "react"
+import React, { useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
@@ -32,70 +32,133 @@ import {
   PopoverContent,
   PopoverTrigger
 } from "@/components/ui/popover"
-import { addTransaction } from "../actions" // Import the server action
+import { useAddTransaction, useUpdateTransaction } from "../hooks" // Import both hooks
+import { Transaction } from "../actions" // Import Transaction type
 
-// Form schema using Zod
+// Form schema using Zod with enhanced client-side validation
 const transactionFormSchema = z.object({
   description: z
     .string()
-    .min(2, { message: "Description must be at least 2 characters." }),
+    .min(2, { message: "Description must be at least 2 characters." })
+    .max(100, { message: "Description must not exceed 100 characters." }),
   amount: z.coerce
     .number()
-    .positive({ message: "Amount must be a positive number." }), // Coerce input to number
+    .positive({ message: "Amount must be a positive number." })
+    .refine((val) => val <= 1000000, {
+      message: "Amount must be less than 1,000,000"
+    }), // Add a reasonable max value
   type: z.enum(["income", "expense"], {
     required_error: "Please select a transaction type."
   }),
-  date: z.date({ required_error: "A date is required." }),
-  category: z.string().optional()
+  date: z
+    .date({
+      required_error: "A date is required.",
+      invalid_type_error: "That's not a valid date!"
+    })
+    .refine((date) => date >= new Date("1900-01-01"), {
+      message: "Date must be after 1900"
+    }),
+  category: z
+    .string()
+    .optional()
+    .transform((val) => (val === "" ? undefined : val)) // Transform empty string to undefined
 })
 
-export function AddTransactionForm({ onSuccess }: { onSuccess?: () => void }) {
+interface AddTransactionFormProps {
+  onSuccess?: () => void
+  budgetedCategories: string[]
+  initialData?: Transaction
+}
+
+export function AddTransactionForm({
+  onSuccess,
+  budgetedCategories,
+  initialData
+}: AddTransactionFormProps) {
   const [error, setError] = useState<string | null>(null)
-  const [isPending, startTransition] = useTransition()
+
+  // Get both mutation hooks
+  const { addTransaction: mutateAddTransaction, isSubmitting: isAdding } =
+    useAddTransaction()
+  const {
+    updateTransaction: mutateUpdateTransaction,
+    isSubmitting: isUpdating
+  } = useUpdateTransaction()
+
+  // Determine if we are editing
+  const isEditMode = !!initialData
 
   const form = useForm<z.infer<typeof transactionFormSchema>>({
     resolver: zodResolver(transactionFormSchema),
-    defaultValues: {
-      description: "",
-      amount: undefined, // Start with undefined amount
-      type: undefined,
-      date: new Date(), // Default to today
-      category: ""
-    }
+    // Set default values based on initialData if editing
+    defaultValues: isEditMode
+      ? {
+          description: initialData.description,
+          // Ensure amount is treated as number
+          amount: Number(initialData.amount),
+          type: initialData.type,
+          // Parse date string back to Date object for the form
+          date: new Date(initialData.date),
+          category: initialData.category ?? "" // Handle null category
+        }
+      : {
+          description: "",
+          amount: undefined,
+          type: undefined,
+          date: new Date(),
+          category: ""
+        },
+    mode: "onChange"
   })
 
   function onSubmit(values: z.infer<typeof transactionFormSchema>) {
     setError(null)
-    startTransition(async () => {
-      try {
-        // Format date to 'YYYY-MM-DD' string before sending to server action
-        const dateString = format(values.date, "yyyy-MM-dd")
 
-        const result = await addTransaction({
-          ...values,
-          date: dateString
-        })
+    const dateString = format(values.date, "yyyy-MM-dd")
 
-        if (result?.error) {
-          throw new Error(result.error)
-        }
+    const submissionData = {
+      ...values,
+      date: dateString
+    }
 
-        form.reset()
-        // Optionally: Show success message or call onSuccess callback
-        console.log("Transaction added successfully!")
-        onSuccess?.()
-      } catch (err) {
-        console.error(err)
-        setError(
-          err instanceof Error ? err.message : "An unexpected error occurred."
+    const mutationOptions = {
+      onSuccess: () => {
+        form.reset(
+          isEditMode
+            ? undefined
+            : {
+                description: "",
+                amount: undefined,
+                type: undefined,
+                date: new Date(),
+                category: ""
+              } // Reset to defaults only when adding
         )
+        onSuccess?.() // Close dialog/modal
+      },
+      onError: (err: unknown) => {
+        // Display a generic error or parse the specific error message
+        setError(err instanceof Error ? err.message : String(err))
       }
-    })
+    }
+
+    if (isEditMode) {
+      // Call update mutation
+      mutateUpdateTransaction(
+        { ...submissionData, id: initialData.id }, // Include ID for update
+        mutationOptions
+      )
+    } else {
+      // Call add mutation
+      mutateAddTransaction(submissionData, mutationOptions)
+    }
   }
+
+  // Determine combined loading state
+  const isSubmitting = isAdding || isUpdating
 
   return (
     <Form {...form}>
-      {/* Using Textarea for description */}
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <FormField
           control={form.control}
@@ -125,6 +188,16 @@ export function AddTransactionForm({ onSuccess }: { onSuccess?: () => void }) {
                     placeholder="0.00"
                     {...field}
                     value={field.value ?? ""}
+                    onChange={(e) => {
+                      // Additional client-side validation
+                      const value = e.target.value
+                      if (
+                        value === "" ||
+                        (!isNaN(parseFloat(value)) && parseFloat(value) >= 0)
+                      ) {
+                        field.onChange(e)
+                      }
+                    }}
                   />
                 </FormControl>
                 <FormMessage />
@@ -163,7 +236,7 @@ export function AddTransactionForm({ onSuccess }: { onSuccess?: () => void }) {
             render={({ field }) => (
               <FormItem className="flex flex-col pt-2">
                 <FormLabel>Date</FormLabel>
-                <Popover>
+                <Popover modal={true}>
                   <PopoverTrigger asChild>
                     <FormControl>
                       <Button
@@ -174,7 +247,7 @@ export function AddTransactionForm({ onSuccess }: { onSuccess?: () => void }) {
                         )}
                       >
                         {field.value ? (
-                          format(field.value, "PPP") // More readable format
+                          format(field.value, "PPP")
                         ) : (
                           <span>Pick a date</span>
                         )}
@@ -186,10 +259,12 @@ export function AddTransactionForm({ onSuccess }: { onSuccess?: () => void }) {
                     <Calendar
                       mode="single"
                       selected={field.value}
-                      onSelect={field.onChange}
-                      disabled={(date) =>
-                        date > new Date() || date < new Date("1900-01-01")
-                      }
+                      onSelect={(date) => {
+                        if (date) {
+                          field.onChange(date)
+                        }
+                      }}
+                      disabled={(date) => date < new Date("1900-01-01")}
                       initialFocus
                     />
                   </PopoverContent>
@@ -203,15 +278,49 @@ export function AddTransactionForm({ onSuccess }: { onSuccess?: () => void }) {
             name="category"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Category (Optional)</FormLabel>
-                <FormControl>
-                  {/* TODO: Replace with Select dropdown populated from p-budgets later? */}
-                  <Input
-                    placeholder="e.g., Food, Transport"
-                    {...field}
-                    value={field.value ?? ""}
-                  />
-                </FormControl>
+                <FormLabel>Category</FormLabel>
+                <Select
+                  onValueChange={(value) => {
+                    // If user selects '+ Create New Category', clear the field
+                    // so the input can take over. Otherwise, set the selected value.
+                    field.onChange(value === "new" ? "" : value)
+                  }}
+                  value={
+                    field.value === "" && form.watch("category") !== ""
+                      ? "new"
+                      : (field.value ?? "")
+                  }
+                >
+                  <FormControl>
+                    {/* If creating new, show the input field value if typed, else show placeholder */}
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select or create a category" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent className="z-50">
+                    {budgetedCategories.map((category) => (
+                      <SelectItem key={category} value={category}>
+                        {category}
+                      </SelectItem>
+                    ))}
+                    <SelectItem value="new">+ Create New Category</SelectItem>
+                  </SelectContent>
+                </Select>
+                {/* Show Input only when explicitly creating new OR if form value is not an existing option */}
+                {(form.watch("category") === "" ||
+                  !budgetedCategories.includes(form.watch("category") ?? "")) &&
+                  field.value !== "new" &&
+                  form.watch("category") !== "" && (
+                    <FormControl>
+                      <Input
+                        placeholder="Enter new category name"
+                        value={form.watch("category") ?? ""} // Bind directly to form value
+                        onChange={(e) => field.onChange(e.target.value)} // Update form value on change
+                        className="mt-2"
+                        autoFocus
+                      />
+                    </FormControl>
+                  )}
                 <FormMessage />
               </FormItem>
             )}
@@ -222,8 +331,14 @@ export function AddTransactionForm({ onSuccess }: { onSuccess?: () => void }) {
           <p className="text-sm font-medium text-destructive">Error: {error}</p>
         )}
 
-        <Button type="submit" disabled={isPending} className="w-full">
-          {isPending ? "Adding Transaction..." : "Add Transaction"}
+        <Button type="submit" disabled={isSubmitting} className="w-full">
+          {isSubmitting
+            ? isEditMode
+              ? "Saving Changes..."
+              : "Adding Transaction..."
+            : isEditMode
+              ? "Save Changes"
+              : "Add Transaction"}
         </Button>
       </form>
     </Form>

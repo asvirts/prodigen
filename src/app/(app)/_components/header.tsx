@@ -1,5 +1,6 @@
 "use client" // DropdownMenu requires client-side interactivity
 
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import { User } from "@supabase/supabase-js"
 import { Button } from "@/components/ui/button"
@@ -12,8 +13,9 @@ import {
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { createClient } from "@/lib/supabase/client" // Use client client for actions triggered by user
+import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
+<<<<<<< HEAD
 import { ThemeToggle } from "@/components/theme-toggle" // Import ThemeToggle
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet" // Import Sheet
 import { Menu } from "lucide-react" // Import Menu icon
@@ -21,8 +23,16 @@ import { SubscribeButton } from "@/components/subscribe-button" // Import Subscr
 import { ManageSubscriptionButton } from "@/components/manage-subscription-button" // Import Manage Button
 import { Badge } from "@/components/ui/badge" // Import Badge
 import { PreferencesDialog } from "@/components/preferences/preferences-dialog" // Import PreferencesDialog
+=======
+import { ThemeToggle } from "@/components/theme-toggle"
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { Menu } from "lucide-react"
+import { SubscribeButton } from "@/components/subscribe-button"
+import { ManageSubscriptionButton } from "@/components/manage-subscription-button"
+import { Badge } from "@/components/ui/badge"
+import { SupabaseClient } from "@supabase/supabase-js"
+>>>>>>> e3a6ed6b7d02761e24a0c75f325f6e1225bbe1e6
 
-// Define Profile type matching the layout
 type UserProfile = {
   id: string
   subscription_plan?: string | null
@@ -30,18 +40,26 @@ type UserProfile = {
 
 interface HeaderProps {
   user: User
-  profile: UserProfile | null // Add profile prop
+  profile: UserProfile | null
 }
 
 export default function Header({ user, profile }: HeaderProps) {
-  // Destructure profile
   const router = useRouter()
-  const supabase = createClient()
+  const [supabase, setSupabase] = useState<SupabaseClient | null>(null)
+
+  useEffect(() => {
+    const initializeSupabase = async () => {
+      const client = await createClient()
+      setSupabase(client)
+    }
+    initializeSupabase()
+  }, [])
 
   const handleSignOut = async () => {
+    if (!supabase) return
     await supabase.auth.signOut()
-    router.push("/auth") // Redirect client-side after sign out
-    router.refresh() // Ensure layout re-renders and checks auth state
+    router.push("/auth")
+    router.refresh()
   }
 
   const getInitials = (email: string | undefined): string => {
@@ -49,7 +67,6 @@ export default function Header({ user, profile }: HeaderProps) {
     return email.substring(0, 2).toUpperCase()
   }
 
-  // Explicitly check profile exists before accessing plan
   const plan = profile ? profile.subscription_plan : null
   const isProUser = plan === "pro"
 
@@ -159,7 +176,6 @@ export default function Header({ user, profile }: HeaderProps) {
               <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                 <Avatar className="h-8 w-8">
                   {/* Placeholder for user avatar image if available */}
-                  {/* <AvatarImage src={user.user_metadata?.avatar_url} alt={user.email} /> */}
                   <AvatarFallback>{getInitials(user.email)}</AvatarFallback>
                 </Avatar>
               </Button>

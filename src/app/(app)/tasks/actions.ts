@@ -10,17 +10,26 @@ export type Task = {
   user_id: string
   title: string
   description?: string | null
+<<<<<<< HEAD
   status: string // 'todo', 'in_progress', 'completed'
+=======
+  status: "todo" | "in_progress" | "done" // Specific enum values
+>>>>>>> e3a6ed6b7d02761e24a0c75f325f6e1225bbe1e6
   due_date?: string | null // ISO 8601 date string (YYYY-MM-DD)
   created_at: string // ISO 8601 timestamp string
 }
 
 // Helper function to create client within actions
 async function createClient() {
+<<<<<<< HEAD
   // Make helper async
   const cookieStore = await cookies()
   // IMPORTANT: Await the call to the async server client creator
   return await createServerSupabaseClient(cookieStore)
+=======
+  const cookieStore = await cookies()
+  return createServerSupabaseClient(cookieStore)
+>>>>>>> e3a6ed6b7d02761e24a0c75f325f6e1225bbe1e6
 }
 
 // Type for AddTaskData
@@ -35,7 +44,7 @@ interface UpdateTaskData {
   id: number
   title?: string
   description?: string
-  status?: string
+  status?: "todo" | "in_progress" | "done"
   due_date?: string | null
 }
 
@@ -46,7 +55,11 @@ export async function getTasks(): Promise<{
   tasks: Task[] | null
   error: string | null
 }> {
+<<<<<<< HEAD
   const supabase = await createClient() // Await the async helper
+=======
+  const supabase = await createClient()
+>>>>>>> e3a6ed6b7d02761e24a0c75f325f6e1225bbe1e6
   const { data: userData, error: userError } = await supabase.auth.getUser()
 
   if (userError || !userData?.user) {
@@ -70,7 +83,11 @@ export async function getTasks(): Promise<{
 export async function addTask(
   formData: AddTaskData
 ): Promise<{ success: boolean; error: string | null }> {
+<<<<<<< HEAD
   const supabase = await createClient() // Await the async helper
+=======
+  const supabase = await createClient()
+>>>>>>> e3a6ed6b7d02761e24a0c75f325f6e1225bbe1e6
 
   // 1. Get current user
   const { data: userData, error: userError } = await supabase.auth.getUser()
@@ -107,7 +124,11 @@ export async function addTask(
 export async function deleteTask(
   taskId: number
 ): Promise<{ success: boolean; error: string | null }> {
+<<<<<<< HEAD
   const supabase = await createClient() // Await the async helper
+=======
+  const supabase = await createClient()
+>>>>>>> e3a6ed6b7d02761e24a0c75f325f6e1225bbe1e6
 
   // 1. Get current user (ensure they own the task implicitly via RLS)
   const { data: userData, error: userError } = await supabase.auth.getUser()
@@ -139,7 +160,11 @@ export async function deleteTask(
 export async function updateTask(
   formData: UpdateTaskData
 ): Promise<{ success: boolean; error: string | null }> {
+<<<<<<< HEAD
   const supabase = await createClient() // Await the async helper
+=======
+  const supabase = await createClient()
+>>>>>>> e3a6ed6b7d02761e24a0c75f325f6e1225bbe1e6
 
   // 1. Get current user (RLS handles ownership check)
   const { data: userData, error: userError } = await supabase.auth.getUser()

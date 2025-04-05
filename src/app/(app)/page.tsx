@@ -25,6 +25,7 @@ import { cn } from "@/lib/utils"
 import { TaskItemWrapper } from "./_components/task-item-wrapper"
 import { HourEntryWrapper } from "./_components/hour-entry-wrapper"
 
+<<<<<<< HEAD
 // Helper to format currency
 function formatCurrency(amount: number) {
   return new Intl.NumberFormat("en-US", {
@@ -32,6 +33,11 @@ function formatCurrency(amount: number) {
     currency: "USD"
   }).format(amount)
 }
+=======
+export default async function Home() {
+  const cookieStore = await cookies() // Get cookie store
+  const supabase = createServerSupabaseClient(cookieStore) // Pass cookie store
+>>>>>>> e3a6ed6b7d02761e24a0c75f325f6e1225bbe1e6
 
 export default async function DashboardPage() {
   const cookieStore = await cookies()
@@ -300,8 +306,14 @@ export default async function DashboardPage() {
   // Server Action for signing out
   const signOut = async () => {
     "use server"
+<<<<<<< HEAD
     const cookieStore = await cookies()
     const supabase = await createClient(cookieStore)
+=======
+
+    const cookieStore = await cookies() // Get cookie store within action
+    const supabase = createServerSupabaseClient(cookieStore) // Pass cookie store
+>>>>>>> e3a6ed6b7d02761e24a0c75f325f6e1225bbe1e6
     await supabase.auth.signOut()
     return redirect("/auth")
   }

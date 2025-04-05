@@ -1,20 +1,9 @@
 import type { Metadata } from "next"
-// import { Geist, Geist_Mono } from "next/font/google"; // Remove Geist
 import { Inter } from "next/font/google" // Add Inter
 import { Toaster } from "sonner" // Correct the import path for Toaster
-import { ThemeProvider } from "@/components/theme-provider" // Import ThemeProvider
+import { Providers } from "./providers" // Import our custom Providers component
 import "./globals.css"
-
-// const geistSans = Geist({ // Remove Geist setup
-//   variable: "--font-geist-sans",
-//   subsets: ["latin"],
-// });
-
-// const geistMono = Geist_Mono({ // Remove Geist setup
-//   variable: "--font-geist-mono",
-//   subsets: ["latin"],
-// });
-
+import { Analytics } from "@vercel/analytics/react"
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" }) // Setup Inter
 
 export const metadata: Metadata = {
@@ -31,15 +20,11 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} font-sans antialiased`}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          {children}
+        <Analytics />
+        <Providers>
+          <div className="flex justify-center">{children}</div>
           <Toaster richColors position="top-right" />
-        </ThemeProvider>
+        </Providers>
       </body>
     </html>
   )

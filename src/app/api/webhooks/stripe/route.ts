@@ -11,8 +11,14 @@ import { createClient } from "@/lib/supabase/admin" // We need admin client to u
 // export const createClient = () => createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
 
 export async function POST(req: Request) {
+  // In development, just return a success response if env vars are missing
+  if (process.env.NODE_ENV !== "production" && !process.env.STRIPE_SECRET_KEY) {
+    return NextResponse.json({ received: true, environment: "development" })
+  }
+
   const body = await req.text() // Need raw body for verification
-  const signature = headers().get("Stripe-Signature") as string
+  const headersList = await headers()
+  const signature = headersList.get("Stripe-Signature") as string
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET
 
   if (!webhookSecret) {
@@ -28,11 +34,15 @@ export async function POST(req: Request) {
   try {
     event = stripe.webhooks.constructEvent(body, signature, webhookSecret)
   } catch (err: unknown) {
+<<<<<<< HEAD
+=======
+    const errorMessage = err instanceof Error ? err.message : "Unknown error"
+>>>>>>> e3a6ed6b7d02761e24a0c75f325f6e1225bbe1e6
     console.error(
-      ` Stripe webhook signature verification failed: ${err.message}`
+      ` Stripe webhook signature verification failed: ${errorMessage}`
     )
     return NextResponse.json(
-      { error: `Webhook Error: ${err.message}` },
+      { error: `Webhook Error: ${errorMessage}` },
       { status: 400 }
     )
   }
@@ -47,10 +57,13 @@ export async function POST(req: Request) {
     )
   }
 
+<<<<<<< HEAD
   const session = event.data.object as
     | Stripe.Checkout.Session
     | Stripe.Subscription
 
+=======
+>>>>>>> e3a6ed6b7d02761e24a0c75f325f6e1225bbe1e6
   try {
     switch (event.type) {
       case "checkout.session.completed": {

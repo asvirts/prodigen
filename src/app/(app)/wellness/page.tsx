@@ -1,4 +1,4 @@
-import React, { Suspense } from "react"
+import React from "react"
 import { getHabits, getTodaysLoggedHabitIds } from "./actions" // Remove unused Habit import
 import {
   Card,
@@ -26,7 +26,7 @@ export default async function WellnessPage() {
   const error = habitsError || logsError
 
   return (
-    <div>
+    <div className="container">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-semibold">Wellness Companion</h1>
         {/* Render the Add Habit Dialog trigger button */}

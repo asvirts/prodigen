@@ -1,5 +1,6 @@
 import React, { Suspense } from "react" // Import Suspense
 import { cookies } from "next/headers" // Import cookies
+<<<<<<< HEAD
 import { createClient } from "@/lib/supabase/server" // Update import name
 // Define the types locally since they don't seem to be exported properly from actions
 interface Budget {
@@ -23,6 +24,10 @@ interface Transaction {
   created_at: string
 }
 
+=======
+import { createClient as createServerSupabaseClient } from "@/lib/supabase/server" // Import server client
+import { Budget, Transaction } from "./actions"
+>>>>>>> e3a6ed6b7d02761e24a0c75f325f6e1225bbe1e6
 import {
   Table,
   TableBody,
@@ -59,6 +64,7 @@ function formatCurrency(amount: number) {
   }).format(amount)
 }
 
+<<<<<<< HEAD
 // Define Page Props to receive searchParams
 interface FinancePageProps {
   searchParams?: {
@@ -68,15 +74,27 @@ interface FinancePageProps {
   }
 }
 
+=======
+// Using the built-in type system for Next.js Pages
+>>>>>>> e3a6ed6b7d02761e24a0c75f325f6e1225bbe1e6
 export default async function FinancePage({
-  searchParams = {}
-}: FinancePageProps) {
+  searchParams
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}) {
   // Convert searchParams to plain object with defaults
+<<<<<<< HEAD
   // Fix by using properly structured code that doesn't directly access properties
   const getParamValue = (param: string | string[] | undefined): string => {
     if (typeof param === "string") return param
     if (Array.isArray(param) && param.length > 0) return param[0]
     return ""
+=======
+  const parsedParams = await searchParams
+  const params = {
+    year: typeof parsedParams.year === "string" ? parsedParams.year : "",
+    month: typeof parsedParams.month === "string" ? parsedParams.month : ""
+>>>>>>> e3a6ed6b7d02761e24a0c75f325f6e1225bbe1e6
   }
 
   const yearValue = getParamValue(searchParams.year)
@@ -87,9 +105,17 @@ export default async function FinancePage({
   const month = parseInt(monthValue, 10) || now.getMonth() + 1
   const currentFilter = { year, month }
 
+<<<<<<< HEAD
   // --- Properly initialize Supabase client ---
   const cookieStore = await cookies()
   const supabase = await createClient(cookieStore)
+=======
+  // --- Client Initialization (Correct for Page Render) ---
+  const cookieStore = await cookies()
+  if (!cookieStore) {
+    throw new Error("Cookie store not available")
+  }
+>>>>>>> e3a6ed6b7d02761e24a0c75f325f6e1225bbe1e6
 
   // Get the current user
   const {
@@ -186,7 +212,13 @@ export default async function FinancePage({
     })
   }
   const monthlyNet = monthlyIncome - monthlyExpenses
-  const detectedCategories = Object.keys(expensesByCategory) // Get categories with expenses
+
+  // Get unique non-null category names from all fetched budgets
+  const distinctBudgetCategories = [
+    ...new Set(
+      budgets?.filter((b) => b.category !== null).map((b) => b.category!) ?? []
+    )
+  ].sort() // Sort alphabetically
 
   // Prepare Budget vs Actual data
   const budgetSummary: {
@@ -259,7 +291,7 @@ export default async function FinancePage({
   })
 
   return (
-    <div>
+    <div className="container">
       <div className="flex flex-wrap justify-between items-center gap-4 mb-4">
         <h1 className="text-2xl font-semibold">Finance Co-Pilot</h1>
         {/* Wrap MonthNavigator in Suspense as it uses useSearchParams */}
@@ -281,11 +313,11 @@ export default async function FinancePage({
                 year={currentFilter.year}
                 month={currentFilter.month}
                 existingBudgets={budgets ?? []}
-                detectedCategories={detectedCategories}
+                detectedCategories={distinctBudgetCategories}
               />
             </DialogContent>
           </Dialog>
-          <AddTransactionDialog />
+          <AddTransactionDialog budgetedCategories={distinctBudgetCategories} />
         </div>
       </div>
 
@@ -386,74 +418,53 @@ export default async function FinancePage({
       </div>
 
       {/* Transaction Table Section */}
-      <div>
-        <h2 className="text-xl font-semibold mb-3">Transactions</h2>
-        {transactionError && (
-          <p className="text-red-500">
-            Error loading transactions: {transactionError}
-          </p>
-        )}
-        {!transactionError && (
-          <div className="rounded-md border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Description</TableHead>
-                  <TableHead>Category</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead className="text-right">Amount</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+      <div className="mt-8">
+        <h2 className="text-xl font-semibold mb-4">Transactions</h2>
+        {transactionError && <p className="text-red-500">{transactionError}</p>}
+        {transactions && transactions.length > 0 && (
+          <Table>
+            <TableCaption>
+              A list of your transactions for the selected month.
+            </TableCaption>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Date</TableHead>
+                <TableHead>Description</TableHead>
+                <TableHead>Category</TableHead>
+                <TableHead>Type</TableHead>
+                <TableHead className="text-right">Amount</TableHead>
+                <TableHead>
+                  <span className="sr-only">Actions</span>
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {transactions.map((tx) => (
+                <TableRow key={tx.id}>
+                  <TableCell>{format(new Date(tx.date), "PPP")}</TableCell>
+                  <TableCell>{tx.description}</TableCell>
+                  <TableCell>{tx.category ?? "-"}</TableCell>
+                  <TableCell>
+                    <Badge
+                      variant={tx.type === "income" ? "default" : "destructive"}
+                      className="capitalize"
+                    >
+                      {tx.type}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    {formatCurrency(tx.amount)}
+                  </TableCell>
+                  <TableCell>
+                    <TransactionRowActions
+                      transaction={tx}
+                      budgetedCategories={distinctBudgetCategories}
+                    />
+                  </TableCell>
                 </TableRow>
-              </TableHeader>
-              <TableBody>
-                {transactions && transactions.length > 0 ? (
-                  transactions.map((tx) => (
-                    <TableRow key={tx.id}>
-                      <TableCell>
-                        {new Date(tx.date).toLocaleDateString()}
-                      </TableCell>
-                      <TableCell className="font-medium">
-                        {tx.description}
-                      </TableCell>
-                      <TableCell>{tx.category || "-"}</TableCell>
-                      <TableCell>
-                        <Badge
-                          variant={
-                            tx.type === "income" ? "default" : "secondary"
-                          }
-                        >
-                          {tx.type}
-                        </Badge>
-                      </TableCell>
-                      <TableCell
-                        className={`text-right font-medium ${
-                          tx.type === "income"
-                            ? "text-green-600"
-                            : "text-red-600"
-                        }`}
-                      >
-                        {tx.type === "income" ? "+" : "-"}
-                        {formatCurrency(Math.abs(tx.amount))}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <TransactionRowActions transaction={tx} />
-                      </TableCell>
-                    </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={6} className="h-24 text-center">
-                      No transactions found for this month.
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-              {transactions && transactions.length > 0 && (
-                <TableCaption>A list of your recent transactions.</TableCaption>
-              )}
-            </Table>
-          </div>
+              ))}
+            </TableBody>
+          </Table>
         )}
       </div>
     </div>
