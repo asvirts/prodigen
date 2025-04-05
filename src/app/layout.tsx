@@ -1,10 +1,16 @@
 import type { Metadata } from "next"
-import { Inter } from "next/font/google" // Add Inter
+import { Inter as NextInter } from "next/font/google" // Add Inter with a different name to avoid conflicts
 import { Toaster } from "sonner" // Correct the import path for Toaster
 import { Providers } from "./providers" // Import our custom Providers component
 import "./globals.css"
 import { Analytics } from "@vercel/analytics/react"
-const inter = Inter({ subsets: ["latin"], variable: "--font-sans" }) // Setup Inter
+
+// Configure the Inter font with proper options
+const inter = NextInter({
+  subsets: ["latin"],
+  display: "swap", // Ensure text is visible during font load
+  variable: "--font-sans"
+})
 
 export const metadata: Metadata = {
   title: "Prodigen - Your AI-Powered Application Suite", // Update title
