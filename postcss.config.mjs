@@ -1,5 +1,9 @@
 const config = {
-  plugins: ["tailwindcss"]
+  plugins: {
+    "postcss-nesting": {},
+    "@tailwindcss/postcss": {},
+    autoprefixer: {}
+  }
 }
 
 export default config

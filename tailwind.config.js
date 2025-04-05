@@ -74,5 +74,9 @@ module.exports = {
       }
     }
   },
-  plugins: []
-}
+  plugins: [
+    require('postcss-nesting'),
+    require('tw-animate-css'),
+    require('tailwindcss-animate')
+    // Add other plugins if needed by shadcn
+  ]
