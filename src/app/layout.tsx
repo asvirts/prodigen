@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     "Personalized AI tools for productivity, finance, wellness, and more." // Update description
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children
 }: Readonly<{
   children: React.ReactNode

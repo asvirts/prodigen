@@ -4,31 +4,31 @@ import { cookies } from "next/headers"
 import { createClient as createServerSupabaseClient } from "@/lib/supabase/server"
 import { revalidatePath } from "next/cache"
 
-// Define the Habit type based on p-habits table
+// Define the Habit type based on p-wellness-habits table
 export type Habit = {
-  id: number
+  id: string // UUID in the migration
   user_id: string
   name: string
   description?: string | null
-  goal_frequency?: string | null // e.g., 'daily', 'weekly:3'
+  goal_frequency?: string | null
+  created_at: string
+  updated_at: string
+}
+
+// Define the WellnessLog type based on p-wellness-logs table
+export type WellnessLog = {
+  id: string // UUID in the migration
+  user_id: string
+  habit_id: string // UUID in the migration
+  date: string // Date field in the migration
+  notes?: string | null
   created_at: string
 }
 
-// Define the WellnessLog type based on p-wellness_logs table (for later use)
-export type WellnessLog = {
-  id: number
-  user_id: string
-  habit_id: number
-  log_date: string // ISO 8601 date string (YYYY-MM-DD)
-  value?: number | null
-  notes?: string | null
-  created_at: string // ISO 8601 timestamp string
-}
-
 // Helper function to create client within actions
-function createClient() {
-  const cookieStore = cookies()
-  return createServerSupabaseClient(cookieStore)
+async function createClient() {
+  const cookieStore = await cookies()
+  return await createServerSupabaseClient(cookieStore)
 }
 
 // Type for the data coming from the add habit form
@@ -53,7 +53,8 @@ export async function getHabits(): Promise<{
   habits: Habit[] | null
   error: string | null
 }> {
-  const supabase = createClient()
+  const cookieStore = await cookies()
+  const supabase = await createServerSupabaseClient(cookieStore)
   const { data: userData, error: userError } = await supabase.auth.getUser()
 
   if (userError || !userData?.user) {
@@ -61,7 +62,7 @@ export async function getHabits(): Promise<{
   }
 
   const { data, error } = await supabase
-    .from("p-habits")
+    .from("p-wellness-habits") // Updated table name to match schema
     .select("*")
     .order("created_at", { ascending: true }) // Show oldest habits first
 
@@ -77,7 +78,7 @@ export async function getHabits(): Promise<{
 export async function addHabit(
   formData: AddHabitData
 ): Promise<{ success: boolean; error: string | null }> {
-  const supabase = createClient()
+  const supabase = await createClient()
 
   // 1. Get current user
   const { data: userData, error: userError } = await supabase.auth.getUser()
@@ -100,7 +101,7 @@ export async function addHabit(
   }
 
   // 3. Insert into Supabase
-  const { error } = await supabase.from("p-habits").insert(habitData)
+  const { error } = await supabase.from("p-wellness-habits").insert(habitData) // Updated table name
 
   if (error) {
     console.error("Error adding habit:", error)
@@ -117,7 +118,7 @@ export async function addHabit(
 export async function addWellnessLog(
   habitId: number
 ): Promise<{ success: boolean; error: string | null }> {
-  const supabase = createClient()
+  const supabase = await createClient()
 
   // 1. Get current user
   const { data: userData, error: userError } = await supabase.auth.getUser()
@@ -134,15 +135,11 @@ export async function addWellnessLog(
   const logData = {
     user_id: userId,
     habit_id: habitId,
-    log_date: today // Log for today
-    // value: null, // Can add value/notes later if needed
-    // notes: null,
+    date: today // Updated field name to match schema
   }
 
   // 3. Insert into Supabase
-  // Note: This doesn't prevent duplicate logs for the same day/habit.
-  // Consider adding unique constraints or upsert logic later if needed.
-  const { error } = await supabase.from("p-wellness_logs").insert(logData)
+  const { error } = await supabase.from("p-wellness-logs").insert(logData)
 
   if (error) {
     console.error("Error adding wellness log:", error)
@@ -152,9 +149,8 @@ export async function addWellnessLog(
     }
   }
 
-  // 4. Revalidate the wellness page path? Optional for now, as we aren't displaying logs yet.
-  //    Might be better to revalidate when fetching/displaying logs.
-  // revalidatePath('/wellness');
+  // 4. Revalidate the wellness page path
+  revalidatePath("/wellness")
 
   return { success: true, error: null }
 }
@@ -164,7 +160,7 @@ export async function getTodaysLoggedHabitIds(): Promise<{
   loggedHabitIds: Set<number> | null
   error: string | null
 }> {
-  const supabase = createClient()
+  const supabase = await createClient()
 
   // 1. Get current user
   const { data: userData, error: userError } = await supabase.auth.getUser()
@@ -179,10 +175,10 @@ export async function getTodaysLoggedHabitIds(): Promise<{
 
   // 3. Fetch logs for today and the user, selecting only habit_id
   const { data, error } = await supabase
-    .from("p-wellness_logs")
+    .from("p-wellness-logs")
     .select("habit_id") // Only select the habit_id column
     .eq("user_id", userId)
-    .eq("log_date", today)
+    .eq("date", today) // Updated field name to match schema
 
   if (error) {
     console.error("Error fetching today's wellness logs:", error)
@@ -199,7 +195,7 @@ export async function getTodaysLoggedHabitIds(): Promise<{
 export async function deleteHabit(
   habitId: number
 ): Promise<{ success: boolean; error: string | null }> {
-  const supabase = createClient()
+  const supabase = await createClient()
 
   // 1. Get user (RLS handles ownership check)
   const { data: userData, error: userError } = await supabase.auth.getUser()
@@ -209,7 +205,7 @@ export async function deleteHabit(
 
   // 2. Delete from Supabase (logs will cascade delete due to foreign key constraint)
   const { error } = await supabase
-    .from("p-habits")
+    .from("p-wellness-habits") // Updated table name
     .delete()
     .match({ id: habitId })
 
@@ -228,7 +224,7 @@ export async function deleteHabit(
 export async function updateHabit(
   formData: UpdateHabitData
 ): Promise<{ success: boolean; error: string | null }> {
-  const supabase = createClient()
+  const supabase = await createClient()
 
   // 1. Get user (RLS handles ownership)
   const { data: userData, error: userError } = await supabase.auth.getUser()
@@ -260,7 +256,7 @@ export async function updateHabit(
 
   // 3. Update in Supabase
   const { error } = await supabase
-    .from("p-habits")
+    .from("p-wellness-habits")
     .update(dataToUpdate)
     .match({ id: id })
 

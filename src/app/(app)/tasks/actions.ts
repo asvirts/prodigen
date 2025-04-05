@@ -10,15 +10,17 @@ export type Task = {
   user_id: string
   title: string
   description?: string | null
-  status: string // 'todo', 'in_progress', 'done'
+  status: string // 'todo', 'in_progress', 'completed'
   due_date?: string | null // ISO 8601 date string (YYYY-MM-DD)
   created_at: string // ISO 8601 timestamp string
 }
 
 // Helper function to create client within actions
-function createClient() {
-  const cookieStore = cookies()
-  return createServerSupabaseClient(cookieStore)
+async function createClient() {
+  // Make helper async
+  const cookieStore = await cookies()
+  // IMPORTANT: Await the call to the async server client creator
+  return await createServerSupabaseClient(cookieStore)
 }
 
 // Type for AddTaskData
@@ -44,7 +46,7 @@ export async function getTasks(): Promise<{
   tasks: Task[] | null
   error: string | null
 }> {
-  const supabase = createClient()
+  const supabase = await createClient() // Await the async helper
   const { data: userData, error: userError } = await supabase.auth.getUser()
 
   if (userError || !userData?.user) {
@@ -68,7 +70,7 @@ export async function getTasks(): Promise<{
 export async function addTask(
   formData: AddTaskData
 ): Promise<{ success: boolean; error: string | null }> {
-  const supabase = createClient()
+  const supabase = await createClient() // Await the async helper
 
   // 1. Get current user
   const { data: userData, error: userError } = await supabase.auth.getUser()
@@ -105,7 +107,7 @@ export async function addTask(
 export async function deleteTask(
   taskId: number
 ): Promise<{ success: boolean; error: string | null }> {
-  const supabase = createClient()
+  const supabase = await createClient() // Await the async helper
 
   // 1. Get current user (ensure they own the task implicitly via RLS)
   const { data: userData, error: userError } = await supabase.auth.getUser()
@@ -137,7 +139,7 @@ export async function deleteTask(
 export async function updateTask(
   formData: UpdateTaskData
 ): Promise<{ success: boolean; error: string | null }> {
-  const supabase = createClient()
+  const supabase = await createClient() // Await the async helper
 
   // 1. Get current user (RLS handles ownership check)
   const { data: userData, error: userError } = await supabase.auth.getUser()
@@ -174,6 +176,8 @@ export async function updateTask(
 
   // 4. Revalidate the tasks page path
   revalidatePath("/tasks")
+  // Also revalidate the dashboard path since it shows tasks
+  revalidatePath("/")
 
   return { success: true, error: null }
 }

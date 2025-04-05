@@ -38,9 +38,8 @@ export default function AuthPage() {
       setError(error.message)
     } else {
       setMessage("Login successful! Redirecting...")
-      // Redirect user after login - typically handled by middleware or effect
-      window.location.href = "/" // Simple redirect for now
     }
+
     setLoading(false)
   }
 

@@ -27,7 +27,9 @@ export function ManageSubscriptionButton() {
       }
 
       // 2. Redirect user to the Stripe Billing Portal URL
-      window.location.href = url
+      if (typeof window !== "undefined") {
+        window.location.href = url
+      }
     } catch (error) {
       console.error("Manage Subscription Error:", error)
       toast.error(error instanceof Error ? error.message : "An error occurred.")

@@ -20,6 +20,7 @@ import { Menu } from "lucide-react" // Import Menu icon
 import { SubscribeButton } from "@/components/subscribe-button" // Import SubscribeButton
 import { ManageSubscriptionButton } from "@/components/manage-subscription-button" // Import Manage Button
 import { Badge } from "@/components/ui/badge" // Import Badge
+import { PreferencesDialog } from "@/components/preferences/preferences-dialog" // Import PreferencesDialog
 
 // Define Profile type matching the layout
 type UserProfile = {
@@ -53,8 +54,8 @@ export default function Header({ user, profile }: HeaderProps) {
   const isProUser = plan === "pro"
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-14 max-w-screen-2xl items-center justify-between">
+    <header className="container mx-auto sticky px-8 top-0 z-50 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="flex h-14 items-center justify-between">
         {/* Left Side: Add flex-shrink-0 */}
         <div className="flex items-center flex-shrink-0">
           {/* Desktop Navigation Area */}
@@ -92,6 +93,13 @@ export default function Header({ user, profile }: HeaderProps) {
                 className="transition-colors hover:text-foreground/80 text-foreground/60"
               >
                 Wellness
+              </Link>
+              {/* Add Hours link */}
+              <Link
+                href="/hours"
+                className="transition-colors hover:text-foreground/80 text-foreground/60"
+              >
+                Hours
               </Link>
               {/* Example for other links (create pages later) */}
             </nav>
@@ -183,9 +191,11 @@ export default function Header({ user, profile }: HeaderProps) {
                 )}
               </div>
               <DropdownMenuSeparator />
-              {/* Add links to Profile, Settings etc. later */}
-              {/* <DropdownMenuItem>Profile</DropdownMenuItem> */}
-              {/* <DropdownMenuItem>Settings</DropdownMenuItem> */}
+              {/* Preferences Dialog */}
+              <div className="p-2">
+                <PreferencesDialog />
+              </div>
+              <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleSignOut}>
                 Log out
               </DropdownMenuItem>

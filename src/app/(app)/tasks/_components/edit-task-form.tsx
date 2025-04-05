@@ -38,7 +38,7 @@ import { toast } from "sonner"
 const editFormSchema = z.object({
   title: z.string().min(2, { message: "Title must be at least 2 characters." }),
   description: z.string().optional(),
-  status: z.enum(["todo", "in_progress", "done"]), // Add status field
+  status: z.enum(["todo", "in_progress", "completed"]), // Update status options
   due_date: z.date().optional().nullable() // Add optional, nullable date
 })
 
@@ -141,7 +141,7 @@ export function EditTaskForm({ task, onSuccess }: EditTaskFormProps) {
                 <SelectContent>
                   <SelectItem value="todo">To Do</SelectItem>
                   <SelectItem value="in_progress">In Progress</SelectItem>
-                  <SelectItem value="done">Done</SelectItem>
+                  <SelectItem value="completed">Completed</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />

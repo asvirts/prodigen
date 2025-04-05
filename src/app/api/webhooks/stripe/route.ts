@@ -27,7 +27,7 @@ export async function POST(req: Request) {
 
   try {
     event = stripe.webhooks.constructEvent(body, signature, webhookSecret)
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error(
       ` Stripe webhook signature verification failed: ${err.message}`
     )
@@ -50,10 +50,6 @@ export async function POST(req: Request) {
   const session = event.data.object as
     | Stripe.Checkout.Session
     | Stripe.Subscription
-  const customerId =
-    typeof session.customer === "string"
-      ? session.customer
-      : session.customer?.id
 
   try {
     switch (event.type) {

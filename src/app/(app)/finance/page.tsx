@@ -1,7 +1,28 @@
 import React, { Suspense } from "react" // Import Suspense
 import { cookies } from "next/headers" // Import cookies
-import { createClient as createServerSupabaseClient } from "@/lib/supabase/server" // Import server client
-import { getTransactions, getBudgets, Budget, Transaction } from "./actions"
+import { createClient } from "@/lib/supabase/server" // Update import name
+// Define the types locally since they don't seem to be exported properly from actions
+interface Budget {
+  id: number
+  user_id: string
+  year: number
+  month: number
+  category: string | null
+  amount: number
+  created_at: string
+}
+
+interface Transaction {
+  id: number
+  user_id: string
+  description: string
+  amount: number
+  type: "income" | "expense"
+  date: string
+  category?: string | null
+  created_at: string
+}
+
 import {
   Table,
   TableBody,
@@ -41,8 +62,8 @@ function formatCurrency(amount: number) {
 // Define Page Props to receive searchParams
 interface FinancePageProps {
   searchParams?: {
-    year?: string
-    month?: string
+    year?: string | string[]
+    month?: string | string[]
     [key: string]: string | string[] | undefined
   }
 }
@@ -51,74 +72,90 @@ export default async function FinancePage({
   searchParams = {}
 }: FinancePageProps) {
   // Convert searchParams to plain object with defaults
-  const params = {
-    year: searchParams?.year?.[0] || searchParams?.year || "",
-    month: searchParams?.month?.[0] || searchParams?.month || ""
+  // Fix by using properly structured code that doesn't directly access properties
+  const getParamValue = (param: string | string[] | undefined): string => {
+    if (typeof param === "string") return param
+    if (Array.isArray(param) && param.length > 0) return param[0]
+    return ""
   }
+
+  const yearValue = getParamValue(searchParams.year)
+  const monthValue = getParamValue(searchParams.month)
 
   const now = new Date()
-  const year = parseInt(params.year, 10) || now.getFullYear()
-  const month = parseInt(params.month, 10) || now.getMonth() + 1
+  const year = parseInt(yearValue, 10) || now.getFullYear()
+  const month = parseInt(monthValue, 10) || now.getMonth() + 1
   const currentFilter = { year, month }
 
-  // --- Client Initialization (Correct for Page Render) ---
-  const cookieStore = cookies()
-  if (!cookieStore) {
-    throw new Error("Cookie store not available")
-  }
+  // --- Properly initialize Supabase client ---
+  const cookieStore = await cookies()
+  const supabase = await createClient(cookieStore)
 
-  const supabase = createServerSupabaseClient(cookieStore)
+  // Get the current user
   const {
     data: { user },
     error: authError
   } = await supabase.auth.getUser()
+
   if (authError || !user) {
     // Handle auth error appropriately, maybe redirect
     console.error("Auth error in FinancePage:", authError)
     return <div>Authentication Error. Please log in.</div>
-    // redirect("/auth") // Or redirect
   }
 
   // --- Data Fetching (Directly in Page Component) ---
   const fetchTransactions = async () => {
-    let query = supabase.from("p-transactions").select("*")
-    // Apply filter
-    const startDate = new Date(currentFilter.year, currentFilter.month - 1, 1)
-    const endDate = new Date(currentFilter.year, currentFilter.month, 0)
-    const startDateString = startDate.toISOString().split("T")[0]
-    const endDateString = endDate.toISOString().split("T")[0]
-    query = query.gte("date", startDateString).lte("date", endDateString)
-    // Apply sorting
-    query = query
-      .order("date", { ascending: false })
-      .order("created_at", { ascending: false })
-    // Execute
-    const { data, error } = await query
-    if (error)
-      return {
-        data: null,
-        error: `Failed to fetch transactions: ${error.message}`
-      }
-    const transactions = data.map((tx) => ({
-      ...tx,
-      amount: Number(tx.amount)
-    })) as Transaction[]
-    return { data: transactions, error: null }
+    try {
+      let query = supabase.from("p-transactions").select("*") // Use hyphen format consistently
+      // Apply filter
+      const startDate = new Date(currentFilter.year, currentFilter.month - 1, 1)
+      const endDate = new Date(currentFilter.year, currentFilter.month, 0)
+      const startDateString = startDate.toISOString().split("T")[0]
+      const endDateString = endDate.toISOString().split("T")[0]
+      query = query.gte("date", startDateString).lte("date", endDateString)
+      // Apply sorting
+      query = query
+        .order("date", { ascending: false })
+        .order("created_at", { ascending: false })
+      // Execute
+      const { data, error } = await query
+      if (error)
+        return {
+          data: null,
+          error: `Failed to fetch transactions: ${error.message}`
+        }
+      const transactions = data.map((tx) => ({
+        ...tx,
+        amount: Number(tx.amount)
+      })) as Transaction[]
+      return { data: transactions, error: null }
+    } catch (err) {
+      console.error("Exception in fetchTransactions:", err)
+      return { data: null, error: String(err) }
+    }
   }
 
   const fetchBudgets = async () => {
-    const { data, error } = await supabase
-      .from("p-budgets")
-      .select("*")
-      .eq("year", currentFilter.year)
-      .eq("month", currentFilter.month)
-    if (error)
-      return { data: null, error: `Failed to fetch budgets: ${error.message}` }
-    const budgets = data.map((b) => ({
-      ...b,
-      amount: Number(b.amount)
-    })) as Budget[]
-    return { data: budgets, error: null }
+    try {
+      const { data, error } = await supabase
+        .from("p-budgets") // Use hyphen format consistently
+        .select("*")
+        .eq("year", currentFilter.year)
+        .eq("month", currentFilter.month)
+      if (error)
+        return {
+          data: null,
+          error: `Failed to fetch budgets: ${error.message}`
+        }
+      const budgets = data.map((b) => ({
+        ...b,
+        amount: Number(b.amount)
+      })) as Budget[]
+      return { data: budgets, error: null }
+    } catch (err) {
+      console.error("Exception in fetchBudgets:", err)
+      return { data: null, error: String(err) }
+    }
   }
 
   // Fetch concurrently

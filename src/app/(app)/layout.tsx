@@ -2,6 +2,7 @@ import { redirect } from "next/navigation"
 import { cookies } from "next/headers"
 import { createClient as createServerSupabaseClient } from "@/lib/supabase/server"
 import Header from "./_components/header" // We will create this component next
+import { ClientLayout } from "./client-layout"
 
 // Define a simple Profile type
 type UserProfile = {
@@ -15,10 +16,10 @@ export default async function AppLayout({
 }: {
   children: React.ReactNode
 }) {
-  const cookieStore = cookies()
-  const supabase = createServerSupabaseClient(cookieStore)
+  const cookieStore = await cookies() // Restore await here
+  const supabase = await createServerSupabaseClient(cookieStore) // Keep await here
 
-  // 1. Get Auth User
+  // 1. Get Auth
   const {
     data: { user },
     error: authError
@@ -52,14 +53,18 @@ export default async function AppLayout({
   }
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <Header user={user} profile={profile} />
-      {/* Display profile loading error if needed */}
-      {profileError && (
-        <div className="container text-red-500 p-4">{profileError}</div>
-      )}
-      <main className="flex-1 p-4 md:p-6 lg:p-8">{children}</main>
-      {/* Optionally add a footer here later */}
-    </div>
+    <ClientLayout userId={user.id}>
+      <div className="flex flex-col min-h-screen">
+        <Header user={user} profile={profile} />
+        {/* Display profile loading error if needed */}
+        {profileError && (
+          <div className="container text-red-500 p-4">{profileError}</div>
+        )}
+        <main className="container mx-auto flex-1 p-4 md:p-6 lg:p-8">
+          {children}
+        </main>
+        {/* Optionally add a footer here later */}
+      </div>
+    </ClientLayout>
   )
 }
