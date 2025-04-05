@@ -1,12 +1,13 @@
 "use client"
 
+import React from "react"
 import { useState } from "react"
 import { usePersonalization } from "@/lib/personalization/context"
-import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Select } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
+import { useToast } from "@/components/ui/use-toast"
 
 interface PreferenceCategory {
   id: string

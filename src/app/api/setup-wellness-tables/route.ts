@@ -1,5 +1,4 @@
-import { createClient } from "@/lib/supabase/server"
-import { createAdminClient } from "@/lib/supabase/admin"
+import { createClient } from "@/lib/supabase/admin"
 import { cookies } from "next/headers"
 import { NextResponse } from "next/server"
 
@@ -10,7 +9,7 @@ export async function GET() {
     const supabase = await createClient(cookieStore)
 
     // Admin client for creating tables (bypasses RLS)
-    const adminClient = createAdminClient()
+    const adminClient = createClient()
 
     // Check if tables exist
     const tables = {

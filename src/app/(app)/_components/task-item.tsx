@@ -1,5 +1,7 @@
 "use client"
 
+import React from "react"
+import { Checkbox } from "@/components/ui/checkbox"
 import { useState, useTransition } from "react"
 import { cn } from "@/lib/utils"
 import { CheckCircle2, Circle } from "lucide-react"
@@ -85,8 +87,8 @@ export function TaskItem({ task }: TaskItemProps) {
           task.status === "pending" || task.status === "todo"
             ? "bg-yellow-100 text-yellow-800"
             : task.status === "completed"
-            ? "bg-green-100 text-green-800"
-            : "bg-gray-100 text-gray-800"
+              ? "bg-green-100 text-green-800"
+              : "bg-gray-100 text-gray-800"
         }`}
       >
         {task.status}

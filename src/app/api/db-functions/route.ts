@@ -9,9 +9,9 @@ export async function GET() {
     // Create a PostgreSQL function to get all tables
     const createRpcResult = await supabase
       .rpc("create_get_tables_function")
-      .catch(async (error) => {
+      .catch(async (_error) => {
         // If RPC doesn't exist, try to create it using raw SQL
-        const { error: sqlError } = await supabase.auth.admin
+        const { error: _sqlError } = await supabase.auth.admin
           .createUser({
             email: "",
             password: ""

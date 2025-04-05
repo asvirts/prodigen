@@ -1,33 +1,7 @@
 import React, { Suspense } from "react" // Import Suspense
 import { cookies } from "next/headers" // Import cookies
-<<<<<<< HEAD
-import { createClient } from "@/lib/supabase/server" // Update import name
-// Define the types locally since they don't seem to be exported properly from actions
-interface Budget {
-  id: number
-  user_id: string
-  year: number
-  month: number
-  category: string | null
-  amount: number
-  created_at: string
-}
-
-interface Transaction {
-  id: number
-  user_id: string
-  description: string
-  amount: number
-  type: "income" | "expense"
-  date: string
-  category?: string | null
-  created_at: string
-}
-
-=======
 import { createClient as createServerSupabaseClient } from "@/lib/supabase/server" // Import server client
 import { Budget, Transaction } from "./actions"
->>>>>>> e3a6ed6b7d02761e24a0c75f325f6e1225bbe1e6
 import {
   Table,
   TableBody,
@@ -53,48 +27,57 @@ import {
   DialogTrigger
 } from "@/components/ui/dialog" // Import Dialog
 import { Button } from "@/components/ui/button"
+import BudgetVsActualTable from "./_components/budget-vs-actual-table"
+import ExpenseByCategoryChart from "./_components/expense-by-category-chart"
 
 export const dynamic = "force-dynamic" // Force dynamic rendering
 
 // Helper to format currency
 function formatCurrency(amount: number) {
+  if (isNaN(amount)) {
+    return "$0.00"
+  }
   return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD"
   }).format(amount)
 }
 
-<<<<<<< HEAD
-// Define Page Props to receive searchParams
-interface FinancePageProps {
-  searchParams?: {
-    year?: string | string[]
-    month?: string | string[]
-    [key: string]: string | string[] | undefined
-  }
+// Define transaction type
+interface Transaction {
+  id: string
+  user_id: string
+  date: string
+  type: "income" | "expense"
+  category: string | null
+  description: string | null
+  amount: number
+  created_at: string
 }
 
-=======
+// Define budget type
+interface Budget {
+  id: string
+  user_id: string
+  year: number
+  month: number
+  category: string | null
+  amount: number
+  created_at: string
+}
+
 // Using the built-in type system for Next.js Pages
->>>>>>> e3a6ed6b7d02761e24a0c75f325f6e1225bbe1e6
-export default async function FinancePage({
-  searchParams
-}: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+export default async function FinancePage(props: {
+  params: Record<string, never>
+  searchParams: { [key: string]: string | string[] | undefined }
 }) {
+  const { searchParams } = props
+
   // Convert searchParams to plain object with defaults
-<<<<<<< HEAD
-  // Fix by using properly structured code that doesn't directly access properties
   const getParamValue = (param: string | string[] | undefined): string => {
     if (typeof param === "string") return param
     if (Array.isArray(param) && param.length > 0) return param[0]
     return ""
-=======
-  const parsedParams = await searchParams
-  const params = {
-    year: typeof parsedParams.year === "string" ? parsedParams.year : "",
-    month: typeof parsedParams.month === "string" ? parsedParams.month : ""
->>>>>>> e3a6ed6b7d02761e24a0c75f325f6e1225bbe1e6
   }
 
   const yearValue = getParamValue(searchParams.year)
@@ -105,17 +88,12 @@ export default async function FinancePage({
   const month = parseInt(monthValue, 10) || now.getMonth() + 1
   const currentFilter = { year, month }
 
-<<<<<<< HEAD
-  // --- Properly initialize Supabase client ---
-  const cookieStore = await cookies()
-  const supabase = await createClient(cookieStore)
-=======
   // --- Client Initialization (Correct for Page Render) ---
   const cookieStore = await cookies()
   if (!cookieStore) {
     throw new Error("Cookie store not available")
   }
->>>>>>> e3a6ed6b7d02761e24a0c75f325f6e1225bbe1e6
+  const supabase = await createServerSupabaseClient(cookieStore)
 
   // Get the current user
   const {
@@ -153,7 +131,7 @@ export default async function FinancePage({
       const transactions = data.map((tx) => ({
         ...tx,
         amount: Number(tx.amount)
-      })) as Transaction[]
+      }))
       return { data: transactions, error: null }
     } catch (err) {
       console.error("Exception in fetchTransactions:", err)
@@ -176,7 +154,7 @@ export default async function FinancePage({
       const budgets = data.map((b) => ({
         ...b,
         amount: Number(b.amount)
-      })) as Budget[]
+      }))
       return { data: budgets, error: null }
     } catch (err) {
       console.error("Exception in fetchBudgets:", err)

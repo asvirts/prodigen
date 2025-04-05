@@ -3,10 +3,8 @@
 import React, { useState, useTransition, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { addWellnessLog } from "../actions" // Import the action
-<<<<<<< HEAD
-import { Loader2 } from "lucide-react" // For loading spinner and Check icon
-=======
->>>>>>> e3a6ed6b7d02761e24a0c75f325f6e1225bbe1e6
+import { useToast } from "@/components/ui/use-toast"
+import { Check } from "lucide-react"
 import { toast } from "sonner" // Import toast
 
 interface LogHabitButtonProps {

@@ -1,15 +1,15 @@
-import { createAdminClient } from "@/lib/supabase/admin"
+import { createClient } from "@/lib/supabase/admin"
 import { NextResponse } from "next/server"
 
 // This endpoint sets up necessary Supabase SQL functions
 export async function GET() {
   try {
-    const supabase = createAdminClient()
+    const supabase = createClient()
 
     // Create function to disable RLS
     const disableRlsResult = await supabase
       .rpc("create_disable_rls_function")
-      .catch(async (error) => {
+      .catch(async (_error) => {
         console.log("Creating disable_rls_on_hours function...")
         const { error: sqlError } = await supabase
           .from("_")
@@ -39,7 +39,7 @@ export async function GET() {
     // Create function to enable RLS
     const enableRlsResult = await supabase
       .rpc("create_enable_rls_function")
-      .catch(async (error) => {
+      .catch(async (_error) => {
         console.log("Creating enable_rls_on_hours function...")
         const { error: sqlError } = await supabase
           .from("_")
@@ -69,7 +69,7 @@ export async function GET() {
     // Create function to add permissive policy
     const policyResult = await supabase
       .rpc("create_add_policy_function")
-      .catch(async (error) => {
+      .catch(async (_error) => {
         console.log("Creating add_permissive_policy_to_hours function...")
         const { error: sqlError } = await supabase
           .from("_")

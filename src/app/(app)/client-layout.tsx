@@ -1,6 +1,6 @@
 "use client"
 
-import { ReactNode } from "react"
+import React from "react"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { Toaster } from "sonner"
 import { PersonalizationProvider } from "@/lib/personalization/context"

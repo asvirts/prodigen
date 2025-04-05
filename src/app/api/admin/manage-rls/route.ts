@@ -1,4 +1,4 @@
-import { createAdminClient } from "@/lib/supabase/admin"
+import { createClient } from "@/lib/supabase/admin"
 import { NextResponse } from "next/server"
 
 // This is an admin-only endpoint that helps manage RLS policies
@@ -8,7 +8,7 @@ export async function GET(request: Request) {
     const action = searchParams.get("action") || "info" // Default to info
 
     // Use the admin client which bypasses RLS
-    const supabase = createAdminClient()
+    const supabase = createClient()
 
     // Get table RLS policies
     if (action === "info") {

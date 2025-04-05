@@ -1,4 +1,4 @@
-import { createAdminClient } from "@/lib/supabase/admin"
+import { createClient } from "@/lib/supabase/admin"
 import { NextResponse } from "next/server"
 
 // This is an admin-only endpoint that bypasses RLS policies
@@ -9,7 +9,7 @@ export async function POST(request: Request) {
     console.log("Admin: Creating hour entry with data:", body)
 
     // Use the admin client which bypasses RLS
-    const supabase = createAdminClient()
+    const supabase = createClient()
 
     const { data, error } = await supabase.from("p-hours").insert(body).select()
 

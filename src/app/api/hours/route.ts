@@ -336,7 +336,7 @@ export async function PUT(request: Request) {
     }
 
     // Ensure the entry belongs to the user (RLS will enforce this but we check anyway)
-    const { data: existingEntry, error: fetchError } = await supabase
+    const { error: fetchError } = await supabase
       .from("p-hours")
       .select("*")
       .eq("id", id)

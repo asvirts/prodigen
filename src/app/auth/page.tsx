@@ -39,15 +39,6 @@ export default function AuthPage() {
         password
       })
 
-<<<<<<< HEAD
-    if (error) {
-      setError(error.message)
-    } else {
-      setMessage("Login successful! Redirecting...")
-    }
-
-    setLoading(false)
-=======
       if (loginError) {
         // Simplified error handling for brevity (keep existing logic if preferred)
         if (loginError.message.includes("Invalid login credentials")) {
@@ -67,7 +58,6 @@ export default function AuthPage() {
     } finally {
       setLoading(false)
     }
->>>>>>> e3a6ed6b7d02761e24a0c75f325f6e1225bbe1e6
   }
 
   const handleSignUp = async () => {

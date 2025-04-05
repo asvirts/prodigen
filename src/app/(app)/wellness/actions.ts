@@ -28,11 +28,7 @@ export type WellnessLog = {
 // Helper function to create client within actions
 async function createClient() {
   const cookieStore = await cookies()
-<<<<<<< HEAD
-  return await createServerSupabaseClient(cookieStore)
-=======
   return createServerSupabaseClient(cookieStore)
->>>>>>> e3a6ed6b7d02761e24a0c75f325f6e1225bbe1e6
 }
 
 // Type for the data coming from the add habit form
@@ -57,12 +53,7 @@ export async function getHabits(): Promise<{
   habits: Habit[] | null
   error: string | null
 }> {
-<<<<<<< HEAD
-  const cookieStore = await cookies()
-  const supabase = await createServerSupabaseClient(cookieStore)
-=======
   const supabase = await createClient()
->>>>>>> e3a6ed6b7d02761e24a0c75f325f6e1225bbe1e6
   const { data: userData, error: userError } = await supabase.auth.getUser()
 
   if (userError || !userData?.user) {

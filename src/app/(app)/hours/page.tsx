@@ -3,13 +3,7 @@
 import { useEffect, useState } from "react"
 import { Calendar } from "@/components/ui/calendar"
 import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle
-} from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import {
   Select,
   SelectContent,
@@ -508,6 +502,11 @@ export default function HoursPage() {
           </Table>
         </CardContent>
       </Card>
+
+      <div className="text-gray-500 text-sm mt-2">
+        Don&apos;t see a client? Add one from the clients page or the dropdown
+        above.
+      </div>
     </div>
   )
 }

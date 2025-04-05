@@ -1,23 +1,5 @@
 import { createClient as createSupabaseClient } from "@supabase/supabase-js"
 
-<<<<<<< HEAD
-// Create a Supabase client with the service role key
-// This client bypasses RLS policies and should ONLY be used server-side
-export const createAdminClient = () => {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-
-  if (!supabaseUrl || !supabaseServiceKey) {
-    throw new Error("Missing Supabase URL or service role key")
-  }
-
-  return createSupabaseClient(supabaseUrl, supabaseServiceKey, {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false
-    }
-  })
-=======
 // Create and export the Supabase admin client instance.
 // Note: This client bypasses RLS. Use it ONLY in secure server-side environments (like API routes, webhooks)
 export const createClient = () => {
@@ -56,7 +38,12 @@ export const createClient = () => {
 
   return createSupabaseClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false
+      }
+    }
   )
->>>>>>> e3a6ed6b7d02761e24a0c75f325f6e1225bbe1e6
 }

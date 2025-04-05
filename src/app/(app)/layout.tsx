@@ -16,14 +16,9 @@ export default async function AppLayout({
 }: {
   children: React.ReactNode
 }) {
-<<<<<<< HEAD
-  const cookieStore = await cookies() // Restore await here
-  const supabase = await createServerSupabaseClient(cookieStore) // Keep await here
-=======
   console.log("[/app layout] Running auth check...")
   const cookieStore = await cookies()
-  const supabase = createServerSupabaseClient(cookieStore)
->>>>>>> e3a6ed6b7d02761e24a0c75f325f6e1225bbe1e6
+  const supabase = await createServerSupabaseClient(cookieStore)
 
   // 1. Get Auth
   const {
@@ -69,9 +64,8 @@ export default async function AppLayout({
   }
 
   return (
-<<<<<<< HEAD
     <ClientLayout userId={user.id}>
-      <div className="flex flex-col min-h-screen">
+      <div className="w-full flex flex-col min-h-screen">
         <Header user={user} profile={profile} />
         {/* Display profile loading error if needed */}
         {profileError && (
@@ -83,16 +77,5 @@ export default async function AppLayout({
         {/* Optionally add a footer here later */}
       </div>
     </ClientLayout>
-=======
-    <div className="p-4 container">
-      <Header user={user} profile={profile} />
-      {/* Display profile loading error if needed */}
-      {profileError && (
-        <div className="container text-red-500 p-4">{profileError}</div>
-      )}
-      <main>{children}</main>
-      {/* Optionally add a footer here later */}
-    </div>
->>>>>>> e3a6ed6b7d02761e24a0c75f325f6e1225bbe1e6
   )
 }

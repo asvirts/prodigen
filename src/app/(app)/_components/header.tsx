@@ -15,23 +15,14 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
-<<<<<<< HEAD
-import { ThemeToggle } from "@/components/theme-toggle" // Import ThemeToggle
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet" // Import Sheet
-import { Menu } from "lucide-react" // Import Menu icon
-import { SubscribeButton } from "@/components/subscribe-button" // Import SubscribeButton
-import { ManageSubscriptionButton } from "@/components/manage-subscription-button" // Import Manage Button
-import { Badge } from "@/components/ui/badge" // Import Badge
-import { PreferencesDialog } from "@/components/preferences/preferences-dialog" // Import PreferencesDialog
-=======
 import { ThemeToggle } from "@/components/theme-toggle"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Menu } from "lucide-react"
 import { SubscribeButton } from "@/components/subscribe-button"
 import { ManageSubscriptionButton } from "@/components/manage-subscription-button"
 import { Badge } from "@/components/ui/badge"
+import { PreferencesDialog } from "@/components/preferences/preferences-dialog"
 import { SupabaseClient } from "@supabase/supabase-js"
->>>>>>> e3a6ed6b7d02761e24a0c75f325f6e1225bbe1e6
 
 type UserProfile = {
   id: string
