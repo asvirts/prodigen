@@ -1,97 +1,66 @@
-# Prodigen - Your AI-Powered Application Suite
+<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
-A Next.js 15 application with finance tracking, task management, and wellness habits features. This application implements modern best practices in React development including efficient data fetching, optimistic UI updates, error handling, and testing.
+<p align="center">
+<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+</p>
 
-## Features
+## About Laravel
 
-- **Finance Management:** Track transactions, manage budgets, and visualize spending patterns
-- **Task Management:** Create, organize, and track tasks with deadlines and status updates
-- **Wellness Habits:** Build healthy habits by tracking daily activities
-- **User Authentication:** Secure authentication with Supabase
-- **Subscription Management:** Subscription handling with Stripe
+Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
 
-## Technology Stack
+- [Simple, fast routing engine](https://laravel.com/docs/routing).
+- [Powerful dependency injection container](https://laravel.com/docs/container).
+- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
+- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
+- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
+- [Robust background job processing](https://laravel.com/docs/queues).
+- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
 
-- **Framework:** Next.js 15 with App Router
-- **UI Components:** Shadcn/UI
-- **Styling:** Tailwind CSS
-- **Data Fetching:** React Query and SWR for efficient caching and revalidation
-- **Authentication:** Supabase Auth
-- **Database:** Supabase PostgreSQL
-- **Form Handling:** React Hook Form with Zod validation
-- **Payments:** Stripe
-- **Testing:** Jest, React Testing Library, and Cypress
+Laravel is accessible, powerful, and provides tools required for large, robust applications.
 
-## Getting Started
+## Learning Laravel
 
-First, run the development server:
+Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-```
+You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
 
-## Environment Variables
+## Laravel Sponsors
 
-Create a `.env.local` file in the root directory with the following variables:
+We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
 
-```
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
-STRIPE_SECRET_KEY=your_stripe_secret_key
-STRIPE_WEBHOOK_SECRET=your_stripe_webhook_secret
-NEXT_PUBLIC_STRIPE_PRICE_ID=your_stripe_price_id
-NEXT_PUBLIC_BASE_URL=http://localhost:3000
-```
+### Premium Partners
 
-## Testing
+- **[Vehikl](https://vehikl.com/)**
+- **[Tighten Co.](https://tighten.co)**
+- **[WebReinvent](https://webreinvent.com/)**
+- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
+- **[64 Robots](https://64robots.com)**
+- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
+- **[Cyber-Duck](https://cyber-duck.co.uk)**
+- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
+- **[Jump24](https://jump24.co.uk)**
+- **[Redberry](https://redberry.international/laravel/)**
+- **[Active Logic](https://activelogic.com)**
+- **[byte5](https://byte5.de)**
+- **[OP.GG](https://op.gg)**
 
-### Unit and Integration Testing
+## Contributing
 
-Run Jest tests:
+Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
 
-```bash
-npm test
-npm run test:watch  # Run in watch mode
-npm run test:coverage  # Generate coverage report
-```
+## Code of Conduct
 
-### End-to-End Testing
+In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
 
-Run Cypress tests:
+## Security Vulnerabilities
 
-```bash
-npm run cypress  # Open Cypress UI
-npm run e2e  # Run end-to-end tests with UI
-npm run e2e:headless  # Run end-to-end tests headlessly
-```
+If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
 
-## Key Improvements
+## License
 
-1. **Efficient Data Fetching:** Using React Query for caching, deduplication, and background updates
-2. **Error Handling:** Comprehensive error boundaries to gracefully handle failures
-3. **Optimistic UI Updates:** Immediate UI updates with rollback on errors for better UX
-4. **Client-Side Validation:** Enhanced form validation with both client and server validation
-5. **Testing Infrastructure:** Complete testing setup with Jest and Cypress
-
-## Deployment
-
-This application can be deployed on Vercel or any other platform that supports Next.js applications.
-
-## Code Quality
-
-### Pre-commit Hooks
-
-This project uses [husky](https://typicode.github.io/husky/) and [lint-staged](https://github.com/okonet/lint-staged) to run code quality checks before each commit:
-
-- ESLint runs to catch any linting errors
-- Prettier formats all staged files
-- All tests must pass before committing
-
-This ensures that the codebase maintains a consistent style and prevents common issues from being committed.
+The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
