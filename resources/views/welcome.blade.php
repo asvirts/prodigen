@@ -309,43 +309,6 @@
             </div>
         </div>
 
-        {{-- Testimonial Section (Example) --}}
-        <section id="testimonials" class="bg-gray-100 dark:bg-gray-800 py-24 sm:py-32">
-            <div class="mx-auto max-w-7xl px-6 lg:px-8">
-                <div class="mx-auto max-w-xl text-center">
-                    <h2 class="text-lg font-semibold leading-8 tracking-tight text-gray-600 dark:text-gray-400">
-                        Testimonials</h2>
-                    <p class="mt-2 text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
-                        Freelancers love Prodigen</p>
-                </div>
-                <div class="mx-auto mt-16 flow-root max-w-2xl sm:mt-20 lg:mx-0 lg:max-w-none">
-                    <div class="-mt-8 sm:-mx-4 sm:columns-2 sm:text-[0] lg:columns-3">
-                        {{-- Placeholder Testimonial --}}
-                        <div class="pt-8 sm:inline-block sm:w-full sm:px-4">
-                            <figure class="rounded-2xl bg-white dark:bg-gray-900 p-8 text-sm leading-6">
-                                <blockquote class="text-gray-900 dark:text-white">
-                                    <p>"Finally, an app that understands the chaos of freelancing! Tracking my time and
-                                        income used to be a nightmare. Prodigen makes it simple and actually...
-                                        enjoyable?"</p>
-                                </blockquote>
-                                <figcaption class="mt-6 flex items-center gap-x-4">
-                                    {{-- Placeholder Avatar --}}
-                                    <img class="h-10 w-10 rounded-full bg-gray-50"
-                                        src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                                        alt="">
-                                    <div>
-                                        <div class="font-semibold text-gray-900 dark:text-white">Jane D.</div>
-                                        <div class="text-gray-600 dark:text-gray-400">Freelance Designer</div>
-                                    </div>
-                                </figcaption>
-                            </figure>
-                        </div>
-                        {{-- Add more testimonials as needed --}}
-                    </div>
-                </div>
-            </div>
-        </section>
-
         {{-- Pricing Section (Placeholder) --}}
         <div id="pricing" class="bg-white dark:bg-gray-900 py-24 sm:py-32">
             <div class="mx-auto max-w-7xl px-6 lg:px-8">
@@ -356,6 +319,67 @@
                         freelance journey. Start free, upgrade anytime.</p>
                 </div>
                 {{-- Pricing details placeholder --}}
+                <div
+                    class="mx-auto mt-16 max-w-2xl rounded-3xl ring-1 ring-gray-200 dark:ring-gray-700 sm:mt-20 lg:mx-0 lg:flex lg:max-w-none">
+                    <div class="p-8 sm:p-10 lg:flex-auto">
+                        <h3 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Free Plan</h3>
+                        <p class="mt-6 text-base leading-7 text-gray-600 dark:text-gray-300">Get started with essential
+                            tools for your freelance business. Supported by ads.</p>
+                        <div class="mt-10 flex items-center gap-x-4">
+                            <h4 class="flex-none text-sm font-semibold leading-6 text-gray-600 dark:text-gray-400">
+                                What's included</h4>
+                            <div class="h-px flex-auto bg-gray-100 dark:bg-gray-700"></div>
+                        </div>
+                        <ul role="list"
+                            class="mt-8 grid grid-cols-1 gap-4 text-sm leading-6 text-gray-600 dark:text-gray-300 sm:grid-cols-2 sm:gap-6">
+                            {{-- Feature list placeholder --}}
+                            <li class="flex gap-x-3"><svg class="h-6 w-5 flex-none text-gray-600 dark:text-gray-400"
+                                    viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                    <path fill-rule="evenodd"
+                                        d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
+                                        clip-rule="evenodd" />
+                                </svg>Basic Project Management</li>
+                            <li class="flex gap-x-3"><svg class="h-6 w-5 flex-none text-gray-600 dark:text-gray-400"
+                                    viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                    <path fill-rule="evenodd"
+                                        d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
+                                        clip-rule="evenodd" />
+                                </svg>Standard Reporting</li>
+                            <li class="flex gap-x-3"><svg class="h-6 w-5 flex-none text-gray-600 dark:text-gray-400"
+                                    viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                    <path fill-rule="evenodd"
+                                        d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
+                                        clip-rule="evenodd" />
+                                </svg>Basic Wellness Tracking</li>
+                            <li class="flex gap-x-3"><svg class="h-6 w-5 flex-none text-gray-600 dark:text-gray-400"
+                                    viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                    <path fill-rule="evenodd"
+                                        d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
+                                        clip-rule="evenodd" />
+                                </svg>Ad-Supported Experience</li>
+                        </ul>
+                    </div>
+                    <div class="-mt-2 p-2 lg:mt-0 lg:w-full lg:max-w-md lg:flex-shrink-0">
+                        <div
+                            class="rounded-2xl bg-gray-50 dark:bg-gray-800/80 py-10 text-center ring-1 ring-inset ring-gray-900/5 lg:flex lg:flex-col lg:justify-center lg:py-16">
+                            <div class="mx-auto max-w-xs px-8">
+                                <p class="text-base font-semibold text-gray-600 dark:text-gray-300">Free to get started
+                                </p>
+                                <p class="mt-6 flex items-baseline justify-center gap-x-2">
+                                    <span
+                                        class="text-5xl font-bold tracking-tight text-gray-900 dark:text-white">$0</span>
+                                    <span
+                                        class="text-sm font-semibold leading-6 tracking-wide text-gray-600 dark:text-gray-300">/month</span>
+                                </p>
+                                <a href="{{ route('register') }}"
+                                    class="mt-10 block w-full rounded-md bg-gray-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-gray-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600">Get
+                                    started</a>
+                                <p class="mt-6 text-xs leading-5 text-gray-600 dark:text-gray-300">Upgrade at any time
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div
                     class="mx-auto mt-16 max-w-2xl rounded-3xl ring-1 ring-gray-200 dark:ring-gray-700 sm:mt-20 lg:mx-0 lg:flex lg:max-w-none">
                     <div class="p-8 sm:p-10 lg:flex-auto">
