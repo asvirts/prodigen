@@ -6,7 +6,7 @@
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
                     <a href="/" class="-m-1.5 p-1.5 flex items-center gap-2">
-                        <img src="{{ Vite::asset('resources/images/logo.svg') }}" alt="App logo" width="36"
+                        <img src="{{ Vite::asset('resources/images/ft-logo.png') }}" alt="App logo" width="36"
                             height="36" />
                         <span class="font-bold text-xl">Freelance Tracker</span>
                     </a>

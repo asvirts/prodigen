@@ -23,7 +23,7 @@
         <nav class="flex items-center justify-between p-6 lg:px-8" aria-label="Global">
             <div class="flex lg:flex-1">
                 <a href="/" class="-m-1.5 p-1.5 flex items-center gap-2">
-                    <img src="{{ Vite::asset('resources/images/logo.svg') }}" alt="App logo" width="36"
+                    <img src="{{ Vite::asset('resources/images/ft-logo.png') }}" alt="App logo" width="36"
                         height="36" />
                     <span class="font-bold text-xl">Freelance Tracker</span>
                 </a>
@@ -70,7 +70,7 @@
                 class="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white dark:bg-gray-900 px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
                 <div class="flex items-center justify-between">
                     <a href="/" class="-m-1.5 p-1.5 flex items-center gap-2">
-                        <img src="{{ Vite::asset('resources/images/logo.svg') }}" alt="App logo" width="36"
+                        <img src="{{ Vite::asset('resources/images/ft-logo.png') }}" alt="App logo" width="36"
                             height="36" />
                         <span class="font-bold text-xl">Freelance Tracker</span>
                     </a>
