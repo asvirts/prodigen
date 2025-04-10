@@ -23,12 +23,7 @@
         <nav class="flex items-center justify-between p-6 lg:px-8" aria-label="Global">
             <div class="flex lg:flex-1">
                 <a href="/" class="-m-1.5 p-1.5">
-                    <span class="sr-only">Prodigen</span>
-                    {{-- Placeholder for Logo --}}
-                    <svg class="h-8 w-auto text-gray-600" fill="currentColor" viewBox="0 0 24 24">
-                        <path
-                            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4z" />
-                    </svg>
+                    <span class="font-bold text-xl">Freelance Tracker</span>
                 </a>
             </div>
             <div class="flex lg:hidden">
@@ -47,8 +42,6 @@
                 {{-- Navigation Links Placeholder --}}
                 <a href="#features" class="text-sm font-semibold leading-6 text-gray-900 dark:text-white">Features</a>
                 <a href="#pricing" class="text-sm font-semibold leading-6 text-gray-900 dark:text-white">Pricing</a>
-                <a href="#testimonials"
-                    class="text-sm font-semibold leading-6 text-gray-900 dark:text-white">Testimonials</a>
             </div>
             <div class="hidden lg:flex lg:flex-1 lg:justify-end">
                 @if (Route::has('login'))
@@ -75,12 +68,7 @@
                 class="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white dark:bg-gray-900 px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
                 <div class="flex items-center justify-between">
                     <a href="/" class="-m-1.5 p-1.5">
-                        <span class="sr-only">Prodigen</span>
-                        {{-- Placeholder Logo --}}
-                        <svg class="h-8 w-auto text-gray-600" fill="currentColor" viewBox="0 0 24 24">
-                            <path
-                                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4z" />
-                        </svg>
+                        <span>Freelance Tracker</span>
                     </a>
                     <button type="button" class="-m-2.5 rounded-md p-2.5 text-gray-700 dark:text-gray-300">
                         <span class="sr-only">Close menu</span>
@@ -152,8 +140,8 @@
                         {{-- Placeholder for Hero Image/Illustration --}}
                         <div
                             class="-m-2 rounded-xl bg-gray-900/5 p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4">
-                            <img src="{{ Vite::asset('resources/images/app.png') }}" alt="App screenshot"
-                                width="2432" height="1442" class="rounded-md shadow-2xl ring-1 ring-gray-900/10">
+                            <img src="{{ Vite::asset('resources/images/app.png') }}" alt="App screenshot" width="2432"
+                                height="1442" class="rounded-md shadow-2xl ring-1 ring-gray-900/10">
                         </div>
                     </div>
                 </div>
@@ -167,73 +155,46 @@
             </div>
         </div>
 
-        {{-- Logo Cloud --}}
-        <div class="bg-white dark:bg-gray-900 py-24 sm:py-32">
-            <div class="mx-auto max-w-7xl px-6 lg:px-8">
-                <h2 class="text-center text-lg font-semibold leading-8 text-gray-900 dark:text-white">Trusted by
-                    freelancers worldwide</h2>
-                <div
-                    class="mx-auto mt-10 grid max-w-lg grid-cols-4 items-center gap-x-8 gap-y-10 sm:max-w-xl sm:grid-cols-6 sm:gap-x-10 lg:mx-0 lg:max-w-none lg:grid-cols-5">
-                    {{-- Placeholder Logos --}}
-                    <img class="col-span-2 max-h-12 w-full object-contain lg:col-span-1"
-                        src="https://tailwindui.com/img/logos/158x48/transistor-logo-gray-900.svg" alt="Transistor"
-                        width="158" height="48">
-                    <img class="col-span-2 max-h-12 w-full object-contain lg:col-span-1"
-                        src="https://tailwindui.com/img/logos/158x48/reform-logo-gray-900.svg" alt="Reform"
-                        width="158" height="48">
-                    <img class="col-span-2 max-h-12 w-full object-contain lg:col-span-1"
-                        src="https://tailwindui.com/img/logos/158x48/tuple-logo-gray-900.svg" alt="Tuple"
-                        width="158" height="48">
-                    <img class="col-span-2 max-h-12 w-full object-contain sm:col-start-2 lg:col-span-1"
-                        src="https://tailwindui.com/img/logos/158x48/savvycal-logo-gray-900.svg" alt="SavvyCal"
-                        width="158" height="48">
-                    <img class="col-span-2 col-start-2 max-h-12 w-full object-contain sm:col-start-auto lg:col-span-1"
-                        src="https://tailwindui.com/img/logos/158x48/statamic-logo-gray-900.svg" alt="Statamic"
-                        width="158" height="48">
-                </div>
-            </div>
-        </div>
-
         {{-- Stats Section --}}
-        <div class="bg-gray-100 dark:bg-gray-800 py-24 sm:py-32">
+        <div class="bg-white dark:bg-gray-800 py-24 sm:py-32">
             <div class="mx-auto max-w-7xl px-6 lg:px-8">
                 <div class="mx-auto max-w-2xl lg:max-w-none">
                     <div class="text-center">
                         <h2 class="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">Boost
                             Your Freelance Productivity</h2>
-                        <p class="mt-4 text-lg leading-8 text-gray-600 dark:text-gray-300">See the impact Prodigen can
-                            have on your workflow and bottom line.</p>
+                        <p class="mt-4 text-lg leading-8 text-gray-600 dark:text-gray-300">See the impact Freelance
+                            Tracker can have on your workflow and bottom line.</p>
                     </div>
                     <dl
                         class="mt-16 grid grid-cols-1 gap-0.5 overflow-hidden rounded-2xl text-center sm:grid-cols-2 lg:grid-cols-4">
                         {{-- Placeholder Stats --}}
-                        <div class="flex flex-col bg-yellow-300/80 dark:bg-yellow-700/50 p-8">
-                            <dt class="text-sm font-semibold leading-6 text-gray-700 dark:text-yellow-200">Hours Saved
-                                Weekly</dt>
+                        <div class="flex flex-col bg-gray-400 dark:bg-gray-700 p-8">
+                            <dt class="text-sm font-semibold leading-6 text-gray-700 dark:text-gray-200">Productivity
+                                Increase</dt>
                             <dd
                                 class="order-first text-3xl font-semibold tracking-tight text-gray-900 dark:text-white">
-                                5+</dd>
+                                25%</dd>
                         </div>
-                        <div class="flex flex-col bg-orange-300/80 dark:bg-orange-700/50 p-8">
-                            <dt class="text-sm font-semibold leading-6 text-gray-700 dark:text-orange-200">Income
-                                Visibility</dt>
+                        <div class="flex flex-col bg-gray-400 dark:bg-gray-700 p-8">
+                            <dt class="text-sm font-semibold leading-6 text-gray-700 dark:text-gray-200">Financial
+                                Clarity</dt>
                             <dd
                                 class="order-first text-3xl font-semibold tracking-tight text-gray-900 dark:text-white">
-                                83%</dd>
+                                85%</dd>
                         </div>
-                        <div class="flex flex-col bg-blue-300/80 dark:bg-blue-700/50 p-8">
-                            <dt class="text-sm font-semibold leading-6 text-gray-700 dark:text-blue-200">Task
-                                Completion Rate</dt>
+                        <div class="flex flex-col bg-gray-400 dark:bg-gray-700 p-8">
+                            <dt class="text-sm font-semibold leading-6 text-gray-700 dark:text-gray-200">Project
+                                Success Rate</dt>
                             <dd
                                 class="order-first text-3xl font-semibold tracking-tight text-gray-900 dark:text-white">
-                                92%</dd>
+                                90%</dd>
                         </div>
-                        <div class="flex flex-col bg-red-300/80 dark:bg-red-700/50 p-8">
-                            <dt class="text-sm font-semibold leading-6 text-gray-700 dark:text-red-200">Wellness Goals
-                                Met</dt>
+                        <div class="flex flex-col bg-gray-400 dark:bg-gray-700 p-8">
+                            <dt class="text-sm font-semibold leading-6 text-gray-700 dark:text-gray-200">User
+                                Satisfaction</dt>
                             <dd
                                 class="order-first text-3xl font-semibold tracking-tight text-gray-900 dark:text-white">
-                                75%+</dd>
+                                95%</dd>
                         </div>
                     </dl>
                 </div>
@@ -241,7 +202,7 @@
         </div>
 
         {{-- Feature Section 1 (Example) --}}
-        <div id="features" class="overflow-hidden bg-white dark:bg-gray-900 py-24 sm:py-32">
+        <div id="features" class="overflow-hidden bg-gray-100 dark:bg-gray-900 py-24 sm:py-32">
             <div class="mx-auto max-w-7xl px-6 lg:px-8">
                 <div
                     class="mx-auto grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 sm:gap-y-20 lg:mx-0 lg:max-w-none lg:grid-cols-2">
