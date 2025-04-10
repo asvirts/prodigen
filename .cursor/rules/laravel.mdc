@@ -17,6 +17,7 @@ alwaysApply: true
 
   PHP/Laravel
   - Use PHP 8.1+ features when appropriate (e.g., typed properties, match expressions).
+  - This app uses Blade with Alpine.js
   - Follow PSR-12 coding standards.
   - Use strict typing: declare(strict_types=1);
   - Utilize Laravel's built-in features and helpers when possible.
