@@ -5,8 +5,10 @@
             <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
-                    <a href="/">
-                        <x-application-logo class="block h-9 w-auto fill-current text-gray-800 dark:text-gray-200" />
+                    <a href="/" class="-m-1.5 p-1.5 flex items-center gap-2">
+                        <img src="{{ Vite::asset('resources/images/logo.svg') }}" alt="App logo" width="36"
+                            height="36" />
+                        <span class="font-bold text-xl">Freelance Tracker</span>
                     </a>
                 </div>
 

@@ -22,7 +22,9 @@
     <header class="absolute inset-x-0 top-0 z-50">
         <nav class="flex items-center justify-between p-6 lg:px-8" aria-label="Global">
             <div class="flex lg:flex-1">
-                <a href="/" class="-m-1.5 p-1.5">
+                <a href="/" class="-m-1.5 p-1.5 flex items-center gap-2">
+                    <img src="{{ Vite::asset('resources/images/logo.svg') }}" alt="App logo" width="36"
+                        height="36" />
                     <span class="font-bold text-xl">Freelance Tracker</span>
                 </a>
             </div>
@@ -67,8 +69,10 @@
             <div
                 class="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white dark:bg-gray-900 px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
                 <div class="flex items-center justify-between">
-                    <a href="/" class="-m-1.5 p-1.5">
-                        <span>Freelance Tracker</span>
+                    <a href="/" class="-m-1.5 p-1.5 flex items-center gap-2">
+                        <img src="{{ Vite::asset('resources/images/logo.svg') }}" alt="App logo" width="36"
+                            height="36" />
+                        <span class="font-bold text-xl">Freelance Tracker</span>
                     </a>
                     <button type="button" class="-m-2.5 rounded-md p-2.5 text-gray-700 dark:text-gray-300">
                         <span class="sr-only">Close menu</span>
@@ -140,8 +144,8 @@
                         {{-- Placeholder for Hero Image/Illustration --}}
                         <div
                             class="-m-2 rounded-xl bg-gray-900/5 p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4">
-                            <img src="{{ Vite::asset('resources/images/app.png') }}" alt="App screenshot" width="2432"
-                                height="1442" class="rounded-md shadow-2xl ring-1 ring-gray-900/10">
+                            <img src="{{ Vite::asset('resources/images/app.png') }}" alt="App screenshot"
+                                width="2432" height="1442" class="rounded-md shadow-2xl ring-1 ring-gray-900/10">
                         </div>
                     </div>
                 </div>
