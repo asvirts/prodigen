@@ -1,0 +1,22 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+Rule Name: prodigen-app-context.mdc
+Description: 
+This application is designed for freelancers to manage various aspects of their work and well-being.
+
+Core Modules:
+1.  **Finance Management:**
+    -   Log income and expenses.
+    -   Calculate and display monthly net income.
+2.  **Task & Time Management:**
+    -   Create and manage tasks (similar to Asana).
+    -   Organize tasks by clients and projects.
+    -   Track time spent on specific tasks, projects, and clients.
+3.  **Wellness Tracking:**
+    -   Track daily wellness habits.
+
+Authentication: Implemented using Laravel Breeze.
+Subscription Management: May involve Stripe (based on previous version).
