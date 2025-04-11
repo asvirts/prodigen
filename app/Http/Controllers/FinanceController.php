@@ -111,9 +111,9 @@ class FinanceController extends Controller
             ->get()
             ->map(function ($item) { $item->type = 'Expense'; return $item; });
 
-        // Combine and sort monthly transactions by date DESC, then created_at DESC for consistent order
+        // Combine and sort monthly transactions by date ASC, then created_at DESC for consistent order
         $monthlyTransactions = $monthlyIncomeRecords->merge($monthlyExpenseRecords)
-            ->sortByDesc('date')
+            ->sortBy('date')
             ->sortByDesc('created_at');
 
         // --- Generate List of Available Months/Years (7 Years Back to Current) ---
