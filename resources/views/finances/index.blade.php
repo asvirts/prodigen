@@ -249,11 +249,11 @@
                 {{-- Right Column: Recent Transactions --}}
                 <div class="lg:col-span-1 p-4 sm:p-8 bg-white shadow sm:rounded-lg">
                     <h3 class="text-lg font-medium text-gray-900 mb-4">{{ __('Recent Activity This Month') }}</h3>
-                    @if ($monthlyTransactions->isEmpty())
+                    @if ($recentTransactions->isEmpty())
                         <p class="text-sm text-gray-600">{{ __('No transactions this month.') }}</p>
                     @else
                         <ul class="divide-y divide-gray-200">
-                            @foreach ($monthlyTransactions->take(6) as $transaction)
+                            @foreach ($recentTransactions as $transaction)
                                 <li class="py-3 flex justify-between items-center">
                                     <div>
                                         <p class="text-sm font-medium text-gray-900">{{ $transaction->description }}
@@ -280,7 +280,7 @@
                 <div class="max-w-full">
                     <h3 class="text-lg font-medium text-gray-900 mb-4">
                         {{ __('Transactions for :month', ['month' => $selectedDate->format('F Y')]) }}</h3>
-                    @if ($monthlyTransactions->isEmpty())
+                    @if ($allMonthlyTransactions->isEmpty())
                         <p class="mt-1 text-sm text-gray-600">
                             {{ __('No transactions recorded for this month.') }}
                         </p>
@@ -310,7 +310,7 @@
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">
-                                    @foreach ($monthlyTransactions as $transaction)
+                                    @foreach ($allMonthlyTransactions as $transaction)
                                         <tr>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                                 {{ $transaction->date->format('Y-m-d') }}

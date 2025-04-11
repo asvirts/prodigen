@@ -111,10 +111,13 @@ class FinanceController extends Controller
             ->get()
             ->map(function ($item) { $item->type = 'Expense'; return $item; });
 
-        // Combine and sort monthly transactions by date ASC, then created_at DESC for consistent order
-        $monthlyTransactions = $monthlyIncomeRecords->merge($monthlyExpenseRecords)
-            ->sortBy('date')
+        // Combine and sort ALL monthly transactions by date DESC (newest first), then created_at DESC for consistent order
+        $allMonthlyTransactions = $monthlyIncomeRecords->merge($monthlyExpenseRecords)
+            ->sortByDesc('date')
             ->sortByDesc('created_at');
+
+        // Get the top 6 recent transactions from the full sorted list
+        $recentTransactions = $allMonthlyTransactions->take(6);
 
         // --- Generate List of Available Months/Years (7 Years Back to Current) ---
         $endMonth = Carbon::now()->startOfMonth(); // Go up to the current month
@@ -138,11 +141,16 @@ class FinanceController extends Controller
             return $item['year'] * 100 + $item['month'];
         })->values();
 
+        // --- DEBUG: Check the count before passing to view ---
+        // dd($allMonthlyTransactions->count()); // Removed debug line
+        // --- END DEBUG ---
+
         return view('finances.index', [
             'selectedDate' => $selectedDate,
             'monthlySummary' => $monthlySummary,
             'ytdSummary' => $ytdSummary,
-            'monthlyTransactions' => $monthlyTransactions,
+            'allMonthlyTransactions' => $allMonthlyTransactions,
+            'recentTransactions' => $recentTransactions,
             'availableMonths' => $availableMonths,
             'previousMonthLink' => $previousMonthLink,
             'nextMonthLink' => $nextMonthLink,
